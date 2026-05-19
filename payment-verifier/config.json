@@ -1,0 +1,35 @@
+{
+  "charge_rules": {
+    "STMS": {
+      "JPI": 20.00,
+      "FIS": null,
+      "EAUTO": 10.00,
+      "SERVICE_TAX": 1.60
+    },
+    "eSTM": {
+      "tiers": [
+        { "total_min": 180.00, "total_max": 9999.99, "JPI": 150.00, "FIS": 20.00, "EAUTO": null, "SERVICE_TAX": 17.80 },
+        { "total_min": 130.00, "total_max": 179.99,  "JPI": 120.00, "FIS": null,  "EAUTO": null, "SERVICE_TAX": 17.80 },
+        { "total_min": 0.00,   "total_max": 129.99,  "JPI": 100.00, "FIS": null,  "EAUTO": null, "SERVICE_TAX": 7.56  }
+      ]
+    },
+    "eLKM": {
+      "JPI": null,
+      "FIS": null,
+      "EAUTO": "TOTAL - 22.97",
+      "SERVICE_TAX": 22.97
+    },
+    "eVOC": {
+      "JPI": null,
+      "FIS": null,
+      "EAUTO": 10.00,
+      "SERVICE_TAX": 0.80
+    },
+    "SSM": {
+      "JPI": 18.00,
+      "FIS": null,
+      "EAUTO": null,
+      "SERVICE_TAX": 1.44
+    }
+  }
+}

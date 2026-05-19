@@ -1,0 +1,4 @@
+*.xlsx
+summary.json
+__pycache__/
+*.pyc
