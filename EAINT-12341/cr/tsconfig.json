@@ -1,0 +1,10 @@
+{
+  "//": "CR specs live outside automation/, so they need automation's path aliases and types pointed at explicitly.",
+  "extends": "../automation/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../automation",
+    "typeRoots": ["../automation/node_modules/@types"],
+    "types": ["node"]
+  },
+  "include": ["**/*.ts"]
+}

@@ -1,0 +1,45 @@
+[
+  {
+    "scenario": "12341_E2E1",
+    "roc": "IP0581553-U",
+    "newRoc": "202303036130",
+    "tin": "D59569096030",
+    "sheetRow": 11,
+    "status": "failed",
+    "firstUsed": "2026-09-24T08:19:47.924Z",
+    "updated": "2026-09-24T08:25:50.432Z",
+    "companyName": "QA 12341 E2E1 ENTERPRISE",
+    "ucdEmail": "azfar.qa.12341_e2e1.muf9h45v@modefair.com",
+    "preApplicationNo": "P260924/00874",
+    "error": "application: page.fill: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#directorMyKad')\u001b[22m\n\u001b[2m    - locator resolved to <input value=\"\" type=\"text\" id=\"directorMyKad\" readonly=\"readonly\" name=\"directorMyKad\" placeholder=\"MyKad No\" class=\"text-input w-[50%]\"/>\u001b[22m\n\u001b[2m    - fill(\"690501137631\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 \u00d7 waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not editable\u001b[22m\n\u001b[2m    - retrying fill acti",
+    "note": "SRD v1.1 attempt (24-25.09.2026, Azfar). Spent by the one-company-one-use rule; do not reuse for the v1.3 chains."
+  },
+  {
+    "scenario": "12341_E2E2",
+    "roc": "003270488-X",
+    "newRoc": "202103148544",
+    "tin": "D29786564010",
+    "sheetRow": 17,
+    "status": "failed",
+    "firstUsed": "2026-09-24T09:35:31.359Z",
+    "updated": "2026-09-24T09:36:42.280Z",
+    "companyName": "QA 12341 E2E2 ENTERPRISE",
+    "ucdEmail": "azfar.qa.12341_e2e2.mufc6hwd@modefair.com",
+    "error": "pre-application: LHDN rejected TIN D29786564010 for 003270488-X / 202103148544.",
+    "note": "SRD v1.1 attempt (24-25.09.2026, Azfar). Spent by the one-company-one-use rule; do not reuse for the v1.3 chains."
+  },
+  {
+    "scenario": "12341_E2E6",
+    "roc": "1267419-A",
+    "newRoc": "201801005405",
+    "tin": "C25358558090",
+    "sheetRow": 22,
+    "status": "failed",
+    "firstUsed": "2026-09-25T01:29:40.067Z",
+    "updated": "2026-09-25T01:33:24.347Z",
+    "companyName": "QA 12341 E2E6 SDN BHD",
+    "ucdEmail": "azfar.qa.12341_e2e6.muga9jab@modefair.com",
+    "error": "pre-application: locator.click: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#nextSubmitBtn')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled type=\"submit\" id=\"nextSubmitBtn\" class=\"btn btn-next\">Next</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 \u00d7 waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 \u00d7 waiting for element to be visible, e",
+    "note": "SRD v1.1 attempt (24-25.09.2026, Azfar). Spent by the one-company-one-use rule; do not reuse for the v1.3 chains."
+  }
+]
