@@ -109,11 +109,15 @@ function companyName(s: ChainScenario): string {
  */
 async function companyFor(s: ChainScenario, runId: string): Promise<Company> {
   if (s.type === "TRADING") {
-    if (!s.trading?.tin) {
-      throw new Error(`${s.id}: no TIN set for the Business Trading chain (open question Q-20). Nothing has been written.`);
+    const tin = s.trading?.tin ?? (await companyFromSheet(s.id, COMPANY_SHEET, { tinOnly: true }))?.tin;
+    if (!tin) {
+      throw new Error(
+        `${s.id}: no TIN for the Business Trading run. Fill the TIN cell of its row in tab "1 Companies" of ` +
+          `${COMPANY_SHEET}. Nothing has been written.`,
+      );
     }
     // Licence: min 4 chars, letters / digits / "/" (pre-application.page.ts).
-    return { roc: `QA/12341/${runId.toUpperCase()}`, newRoc: "", tin: s.trading.tin, sheetRow: 0 };
+    return { roc: `QA/12341/${runId.toUpperCase()}`, newRoc: "", tin, sheetRow: 0 };
   }
   const company = s.company ?? (await companyFromSheet(s.id, COMPANY_SHEET));
   if (!company) {
@@ -215,7 +219,8 @@ for (const s of SCENARIOS) {
       }
       await preApp.fillForm({
         businessName: name,
-        businessType: RADIO[s.type],
+        businessType:
+          s.type === "TRADING" && s.trading?.region === "SARAWAK" ? BUSINESS_TYPE.TRADING_SARAWAK : RADIO[s.type],
         // What eSim holds as `roc` — WITHOUT its check letter when split.
         // eAuto appends the letter itself; typing it too doubles it.
         oldBrn: keys?.roc,

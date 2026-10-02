@@ -74,6 +74,15 @@ chains:
   stop: Application Approved
   purpose: REQ-005 Example 2 (foreign director) + Sdn Bhd business type.
   data: 'New PASS ROC company (TIN prefix C). eSim seed: 3 DIRECTOR, 1 with a non-12-digit (passport) ID.'
+- id: 12341_CH8
+  type: ROC
+  btype: Sdn Bhd / Bhd
+  count: 4 directors
+  nationality: All Malaysian
+  stop: Application Approved
+  purpose: Sdn Bhd normal case (REQ-005 Example 1), added at the QA's request so Sdn Bhd / Bhd is covered without a foreign
+    director too.
+  data: 'New PASS ROC company (TIN prefix C). eSim: 4 DIRECTOR, all 12-digit IC.'
 - id: 12341_CH4
   type: LLP
   btype: LLP
@@ -84,13 +93,21 @@ chains:
   data: 'New PASS LLP company (TIN prefix PT). eSim seed: 4 PT. (Only 1 LLP was usable on the 23.09 sheet.)'
 - id: 12341_CH5
   type: TRADING
-  btype: Business Trading (Sabah) or (Sarawak)
+  btype: Business Trading (Sabah)
   count: 2 directors (typed)
   nationality: All Malaysian
   stop: Application Approved
   purpose: 'Non-SSM business type: ''the same email is sent to every UCD'' (SRD §2.2.2). Appointment Letter BRN fields TBC
     (Q-09).'
-  data: 'Unique trading licence number + licence file (pdf/png/jpg ≤5MB). TIN to use: Q-20. No eSim seed.'
+  data: 'Unique trading licence number (robot generates) + licence file (sample provided). TIN to use: Q-20. No eSim setup.'
+- id: 12341_CH7
+  type: TRADING
+  btype: Business Trading (Sarawak)
+  count: 2 directors (typed)
+  nationality: All Malaysian
+  stop: Application Approved
+  purpose: Second non-SSM business type (Sarawak) — every business type on the Pre-Application form is covered once.
+  data: 'Same as CH5, region Sarawak. TIN to use: Q-20. No eSim setup.'
 - id: 12341_CH6
   type: ROB
   btype: Sole Proprietorship / Partnership
@@ -294,6 +311,24 @@ cases:
   remarks: REQ-005 Example 2 by nationality. The foreign director may not display in SSM Details — no longer relevant to the
     outcome.
   red: false
+- id: 12341_TS08A
+  section: B — Same template regardless of company structure (REQ-005 Example 1 / Example 2)
+  chain: 12341_CH8
+  req: REQ-005 (Example 1)
+  title: Sdn Bhd, 4 directors, all Malaysian → the same combined guideline email
+  type: Functional / Positive
+  prio: High
+  pre: 'Precondition: chain 12341_CH8 has been executed by the automation up to Application Approved (see the ''Test Data
+    & Chains'' sheet). The run log''s READY FOR MANUAL EMAIL CHECK block gives the UCD email, Application No, Pre-Application
+    No, company name, BRNs and the approval timestamp used below.'
+  steps: '1. In Mailtrap, search for chain CH8''s UCD email.
+
+    2. Open the guideline email; check To/CC, subject and body against TS01–TS03 and TS05.'
+  expected: • Combined Email Template 1 received with CH8's values; To = UCD email, CC = apply@eauto.my, Appointment Letter
+    attached.
+  remarks: 'Added 02.10.2026 at the QA''s request: Sdn Bhd / Bhd covered by a normal case as well as the foreign-director
+    case (TS08).'
+  red: false
 - id: 12341_TS09
   section: B — Same template regardless of company structure (REQ-005 Example 1 / Example 2)
   chain: 12341_CH4
@@ -313,19 +348,19 @@ cases:
   red: false
 - id: 12341_TS10
   section: B — Same template regardless of company structure (REQ-005 Example 1 / Example 2)
-  chain: 12341_CH5
+  chain: 12341_CH5, CH7
   req: REQ-005
-  title: Business Trading (non-SSM) → the same combined guideline email
+  title: Business Trading (Sabah) and Business Trading (Sarawak) (non-SSM) → the same combined guideline email
   type: Functional / Positive
   prio: Medium
-  pre: 'Precondition: chain 12341_CH5 has been executed by the automation up to Application Approved (see the ''Test Data
-    & Chains'' sheet). The run log''s READY FOR MANUAL EMAIL CHECK block gives the UCD email, Application No, Pre-Application
-    No, company name, BRNs and the approval timestamp used below.'
-  steps: '1. In Mailtrap, search for chain CH5''s UCD email.
+  pre: 'Precondition: chains CH5 (Sabah) and CH7 (Sarawak) executed to Application Approved.'
+  steps: 'For each of CH5 and CH7:
+
+    1. In Mailtrap, search for the chain''s UCD email.
 
     2. Open the guideline email; check To/CC, subject and body against TS01–TS03 and TS05.'
-  expected: • Combined Email Template 1 received with CH5's values; To = UCD email, CC = apply@eauto.my, Appointment Letter
-    attached.
+  expected: '• For both: combined Email Template 1 received with that chain''s values; To = UCD email, CC = apply@eauto.my,
+    Appointment Letter attached.'
   remarks: v1.1 had this case TBC (no SSM data for the determination). v1.3 removes the determination, and SRD §2.2.2 says
     the same email is sent to every UCD, so the expected result is now confirmed by the SRD.
   red: false
@@ -414,12 +449,12 @@ cases:
   red: false
 - id: 12341_TS15
   section: C — Appointment Letter email to RHB Support (Email Template 3)
-  chain: 12341_CH2, CH3, CH4, CH5
+  chain: 12341_CH2, CH3, CH4, CH5, CH7, CH8
   req: REQ-006, REQ-009
   title: Appointment Letter email is sent for every approved Application, whatever the company structure
   type: Functional / Positive
   prio: Medium
-  pre: 'Precondition: chains CH2, CH3, CH4 and CH5 executed to Application Approved.'
+  pre: 'Precondition: chains CH2, CH3, CH4, CH5, CH7 and CH8 executed to Application Approved.'
   steps: 'For each chain:
 
     1. In Mailtrap, search for the chain''s UCD email.
@@ -429,7 +464,7 @@ cases:
     3. Check To/CC, subject, body values and the attachment as in TS11–TS14.'
   expected: '• For every chain: one Appointment Letter email, To = BIS.Support@rhbgroup.com, CC = UCD email + apply@eauto.my,
     subject/body per Email Template 3 with that chain''s values, Appointment Letter attached.'
-  remarks: 'Business Trading (CH5): what [BRN Number] shows is Q-05 / Q-09 — record it.'
+  remarks: 'Business Trading (CH5, CH7): what [BRN Number] shows is Q-05 / Q-09 — record it.'
   red: false
 - id: 12341_TS16
   section: D — Appointment Letter document
@@ -513,13 +548,13 @@ cases:
   red: false
 - id: 12341_TS19
   section: D — Appointment Letter document
-  chain: 12341_CH3, CH4
+  chain: 12341_CH3, CH4, CH8
   req: REQ-007
   title: Appointment Letter registration number for Sdn Bhd and LLP formats
   type: Functional / Data
   prio: Medium
-  pre: 'Precondition: chains CH3 and CH4 executed to Application Approved.'
-  steps: '1. Open the Appointment Letter of CH3 (Sdn Bhd) and of CH4 (LLP).
+  pre: 'Precondition: chains CH3, CH8 and CH4 executed to Application Approved.'
+  steps: '1. Open the Appointment Letter of CH3 and CH8 (Sdn Bhd) and of CH4 (LLP).
 
     2. Check the registration number in the recipient block, Clause 1 and Clause 4 against the SSM details of each Pre-Application.'
   expected: '• Sdn Bhd: ''<old ROC with check letter> (<12-digit new ROC>)'', e.g. ''639691-H (200401001188)''.
@@ -532,15 +567,13 @@ cases:
   red: false
 - id: 12341_TS20
   section: D — Appointment Letter document
-  chain: 12341_CH5
+  chain: 12341_CH5, CH7
   req: REQ-007
-  title: Appointment Letter for a Business Trading (non-SSM) company
+  title: Appointment Letter for a Business Trading (non-SSM) company — Sabah and Sarawak
   type: Functional / Data
   prio: Medium
-  pre: 'Precondition: chain 12341_CH5 has been executed by the automation up to Application Approved (see the ''Test Data
-    & Chains'' sheet). The run log''s READY FOR MANUAL EMAIL CHECK block gives the UCD email, Application No, Pre-Application
-    No, company name, BRNs and the approval timestamp used below.'
-  steps: '1. Open the Appointment Letter of CH5.
+  pre: 'Precondition: chains CH5 and CH7 executed to Application Approved.'
+  steps: '1. Open the Appointment Letter of CH5 and of CH7.
 
     2. Check the recipient block, Clause 1 and Clause 4 ''Company Registration No.''.'
   expected: '• TBC — the SRD sources [Old BRN] / [New BRN] from the SSM details, which a Business Trading company does not
@@ -817,10 +850,11 @@ open_questions:
   ask: BA
   status: Open
 - id: Q-20
-  question: 'Test data: please share a fresh company-details-checker sheet (PASS rows) — needed: 3 ROB (TIN D), 1 ROC (TIN
-    C), 1 LLP (TIN PT). For Business Trading (CH5): which TIN may be used (Application step 1 makes TIN mandatory)?'
+  question: 'Test data: please share a fresh company-details-checker sheet (PASS rows) — needed: 3 ROB (TIN D), 2 ROC (TIN
+    C), 1 LLP (TIN PT). For Business Trading (CH5 Sabah, CH7 Sarawak): which TINs may be used (Application step 1 makes TIN
+    mandatory)?'
   interim: Chains refuse to run without an assigned company.
-  blocks: CH1–CH6
+  blocks: CH1–CH8
   ask: QA (Azila)
   status: Open
 - id: Q-21
@@ -879,7 +913,7 @@ retired_v1_1:
   disposition: Retired — REQ-003 removed.
 - id: 12341_E2E12
   scenario: Business Trading → TBC
-  disposition: Replaced by TS10 (template now confirmed) + TS20 (letter BRN TBC).
+  disposition: Replaced by TS10 (template now confirmed, Sabah CH5 + Sarawak CH7) + TS20 (letter BRN TBC).
 - id: 12341_E2E13
   scenario: Template 3 To/CC
   disposition: Carried over as TS11.

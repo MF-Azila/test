@@ -114,6 +114,12 @@ export const SCENARIOS: ChainScenario[] = [
     // company: Q-20 — PASS row, TIN prefix C
   },
   {
+    id: "12341_CH8", businessType: "Sdn Bhd / Bhd", type: "ROC", sheetCount: "4", sheetNationality: "All Malaysian",
+    covers: ["TS08A", "TS15", "TS19", "TS21"],
+    seed: { directors: 4 }, stopAt: "approved",
+    // company: tab "1 Companies" — PASS row, TIN prefix C (added 02.10.2026 at the QA's request)
+  },
+  {
     id: "12341_CH4", businessType: "LLP", type: "LLP", sheetCount: "4", sheetNationality: "All Malaysian",
     covers: ["TS09", "TS15", "TS19", "TS21"],
     seed: { directors: 4 }, stopAt: "approved",
@@ -125,8 +131,16 @@ export const SCENARIOS: ChainScenario[] = [
     sheetNationality: "All Malaysian",
     covers: ["TS10", "TS15", "TS20", "TS21"],
     seed: { directors: 2 }, stopAt: "approved",
-    trading: { region: "SABAH", licenceFile: "trading-licence.pdf" /* , tin: Q-20 */ },
+    trading: { region: "SABAH", licenceFile: "trading-licence.pdf" /* , tin: Q-20 — or tab "1 Companies" */ },
     note: "Non-SSM. Letter BRN fields expected TBC (Q-09). First run of the Business Trading path in this chain — watch it.",
+  },
+  {
+    id: "12341_CH7", businessType: "Business Trading (Sarawak)", type: "TRADING", sheetCount: "2 (typed)",
+    sheetNationality: "All Malaysian",
+    covers: ["TS10", "TS15", "TS20", "TS21"],
+    seed: { directors: 2 }, stopAt: "approved",
+    trading: { region: "SARAWAK", licenceFile: "trading-licence.pdf" /* , tin: Q-20 — or tab "1 Companies" */ },
+    note: "Non-SSM, Sarawak. Run after CH5 has worked.",
   },
   {
     id: "12341_CH6", businessType: ROB, type: "ROB", sheetCount: "4", sheetNationality: "All Malaysian",

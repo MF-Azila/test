@@ -12,6 +12,8 @@
     "ch4": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH4 playwright test --project=cr",
     "ch5": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH5 playwright test --project=cr",
     "ch6": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH6 playwright test --project=cr",
+    "ch7": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH7 playwright test --project=cr",
+    "ch8": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH8 playwright test --project=cr",
     "report": "playwright show-report",
     "esim:check": "tsx scripts/esim-check.ts",
     "preview": "tsx scripts/preview-chain.ts"

@@ -70,7 +70,18 @@ If anything is red, take a screenshot and send it to QA support.
 ```
 npm run ch1
 ```
-(for the others: `npm run ch2`, `npm run ch3`, `npm run ch4`, `npm run ch6`)
+(for the others: `npm run ch2` … `npm run ch8` — see the list below)
+
+| Run | Business type | eSim needed? |
+|---|---|---|
+| ch1 | Sole Proprietorship / Partnership — 4 owners | yes |
+| ch2 | Sole Proprietorship / Partnership — 5 owners | yes |
+| ch3 | Sdn Bhd / Bhd — 3 directors, 1 foreign | yes |
+| ch8 | Sdn Bhd / Bhd — 4 directors | yes |
+| ch4 | LLP — 4 partners | yes |
+| ch5 | Business Trading (Sabah) | no — TIN only in tab 1 |
+| ch7 | Business Trading (Sarawak) | no — TIN only in tab 1 |
+| ch6 | Sole Proprietorship / Partnership — stops at Submitted | yes |
 
 **10. Watch the browser and do 3 things when asked** — the black window tells you:
 
@@ -103,7 +114,7 @@ Either way: **copy all the text in the window** (or screenshot it) and send it t
 ## Special cases
 
 - **CH6** stops at *Submitted* by design. Check Mailtrap (no new email), then in BackOffice do **Revert to UCD** yourself, wait 10 minutes, check Mailtrap again.
-- **CH5 (Business Trading)** needs no eSim and no company row, but needs a TIN — wait for QA support to add it.
+- **CH5 (Sabah) and CH7 (Sarawak) — Business Trading** need no eSim. Fill only the **TIN** cell of their row in tab 1.
 - **A run failed?** That company is used up. Copy a **Spare** row's numbers into that run's row in tab 1, set up eSim again, run again.
 
 ## Keep these 3 files safe

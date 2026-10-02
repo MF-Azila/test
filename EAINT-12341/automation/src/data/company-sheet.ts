@@ -27,7 +27,11 @@ function text(v: ExcelJS.CellValue): string {
 }
 
 /** The company for e.g. "12341_CH1", or undefined when its row is empty. */
-export async function companyFromSheet(chainId: string, file: string): Promise<SheetCompany | undefined> {
+export async function companyFromSheet(
+  chainId: string,
+  file: string,
+  opts: { tinOnly?: boolean } = {},
+): Promise<SheetCompany | undefined> {
   if (!fs.existsSync(file)) return undefined;
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.readFile(file);
@@ -42,6 +46,8 @@ export async function companyFromSheet(chainId: string, file: string): Promise<S
     const tin = text(row.getCell(8).value).toUpperCase();
     const sheetRow = Number(text(row.getCell(9).value)) || 0;
     if (!roc && !newRoc && !tin) return undefined;
+    // Business Trading: no SSM numbers, only the TIN is needed.
+    if (opts.tinOnly) return tin ? { roc: "", newRoc: "", tin, sheetRow } : undefined;
     if (!roc || newRoc.length !== 12 || !tin) {
       throw new Error(
         `${path.basename(file)} row ${r} (${run}) is incomplete: need ROC/ROB with letter, a 12-digit new number ` +

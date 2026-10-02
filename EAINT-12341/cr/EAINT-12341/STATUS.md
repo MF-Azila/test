@@ -41,8 +41,12 @@ now feeds most checks. Full mapping: workbook sheets *Change Analysis* and
 | 12341_CH2 | ROB | 5 MY | Approved | TS07, 15, 21 | **not assigned** | — |
 | 12341_CH3 | ROC | 3, 1 foreign | Approved | TS08, 15, 19, 21 | **not assigned** | — |
 | 12341_CH4 | LLP | 4 PT | Approved | TS09, 15, 19, 21 | **not assigned** (LLP0035174-LGN unspent, recheck) | — |
-| 12341_CH5 | Business Trading | 2 typed | Approved | TS10, 15, 20, 21 | licence generated; **TIN needed (Q-20)**; fixture `trading-licence.pdf` needed | — |
+| 12341_CH5 | Business Trading (Sabah) | 2 typed | Approved | TS10, 15, 20, 21 | licence generated; **TIN needed (Q-20)**; fixture `trading-licence.pdf` needed | — |
 | 12341_CH6 | ROB | 4 MY | **Submitted** | TS25 | **not assigned** | — |
+| 12341_CH7 | Business Trading (Sarawak) | 2 typed | Approved | TS10, 15, 20, 21 | licence generated; **TIN needed** | — |
+| 12341_CH8 | ROC | 4 MY | Approved | TS08A, 15, 19, 21 | **not assigned** (added 02.10 at QA's request) | — |
+
+Companies, TINs and the eSim values: `02-plan/EAINT-12341_eSim_Setup.xlsx` (the tester fills tab "1 Companies"; the robot reads it). eSim is set up by hand; payment and reCAPTCHA by hand.
 
 Run order: **CH1 first, alone**. It proves the chain end to end and carries
 most checks; run the others only after CH1's emails have been looked at.
