@@ -60,6 +60,38 @@ export interface ChainScenario {
 
 const ROB = "Sole Proprietorship / Partnership";
 
+export interface Person {
+  name: string;
+  /** 12 digits, no dashes (ROB Current Owner Info / LLP). */
+  icPlain: string;
+  /** With dashes (ROC Page 3): 690501-13-7631. */
+  icDashed: string;
+  foreign: boolean;
+}
+
+/**
+ * The people the TESTER types into eSim for a chain (eSim is set up by hand —
+ * see 02-plan/EAINT-12341_eSim_Setup.xlsx, generated from the same rule).
+ * Malaysians first, foreigners LAST, so "QA DIRECTOR A" is always a Malaysian
+ * with a 12-digit MyKad — the Main User the robot picks on Application step 3.
+ *
+ * Foreign ID format is NOT confirmed (asked 02.10.2026): a passport-style
+ * "A1234567x" is used.
+ */
+export function chainPeople(s: ChainScenario): Person[] {
+  const foreign = s.seed.foreign ?? 0;
+  return Array.from({ length: s.seed.directors }, (_, i) => {
+    const isForeign = i >= s.seed.directors - foreign;
+    const ic = isForeign ? `A1234567${i}` : `${690501 + i}13${7631 + i}`;
+    return {
+      name: `QA DIRECTOR ${String.fromCharCode(65 + i)}`,
+      icPlain: ic,
+      icDashed: isForeign ? ic : `${ic.slice(0, 6)}-${ic.slice(6, 8)}-${ic.slice(8)}`,
+      foreign: isForeign,
+    };
+  });
+}
+
 export const SCENARIOS: ChainScenario[] = [
   {
     id: "12341_CH1", businessType: ROB, type: "ROB", sheetCount: "4", sheetNationality: "All Malaysian",

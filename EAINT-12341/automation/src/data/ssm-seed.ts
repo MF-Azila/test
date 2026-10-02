@@ -30,10 +30,8 @@ import {
   SSM_OK,
   SAMPLE_IC,
   countedOwners,
-  rocDirectorsXml,
-  rocShareholdersXml,
-  robOwnersXml,
-  llpInvolvementsXml,
+  clonePeople,
+  type CloneReport,
   type OwnerConfig,
   type SsmType,
 } from "@data/ssm";
@@ -67,6 +65,8 @@ export interface SeedRequest extends SeedPeople {
   companyName?: string;
   /** Written into eSim's `remark`, so a row says who seeded it and why. */
   remark?: string;
+  /** Build the rows and return them WITHOUT writing anything to eSim. */
+  dryRun?: boolean;
 }
 
 export interface SeedResult {
@@ -81,6 +81,12 @@ export interface SeedResult {
   submission: { id: number | undefined; action: "created" | "updated" };
   /** Template tags the donor lacked (see `forceTags`). Empty when all were set. */
   warnings: string[];
+  /** How the people were copied from the donor (see `clonePeople`). */
+  people: Record<string, CloneReport>;
+  /** The donor row the templates were copied from. */
+  donorId: number | undefined;
+  /** The rows as written (or, on a dry run, as they WOULD be written). */
+  rows: { enquiry: Record<string, unknown>; submission: Record<string, unknown> };
 }
 
 /** Which column carries the people, per type — also the donor test. */
@@ -112,10 +118,9 @@ function buildOwners(p: SeedPeople): OwnerConfig[] {
       name: `QA DIRECTOR ${String.fromCharCode(65 + i)}`,
       // A foreign director carries a passport, and that is what makes the
       // system read them as foreign — there is no nationality field.
-      ic:
-        i < foreign
-          ? `${SAMPLE_IC.foreignA.slice(0, 2)}${String(1000000 + i).slice(-7)}`
-          : `${690501 + i}-13-${7631 + i}`,
+      // Malaysians first, foreigners LAST — same people as chainPeople() in
+      // cr/EAINT-12341/03-spec/chain-scenarios.ts and the eSim setup sheet.
+      ic: i >= p.directors - foreign ? `${SAMPLE_IC.foreignA}${i}` : `${690501 + i}-13-${7631 + i}`,
       designation: "DIRECTOR",
     });
   }
@@ -246,6 +251,12 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
         "which seeds PREVIOUS_OWNER — the block ROB actually excludes.",
     );
   }
+  // The rebuilt seeder copies the donor's first person block and changes IC
+  // and name only — it cannot set a DESIGNATION / involveType whose tag is not
+  // known, so a "secretary" would land as one more director. Refuse.
+  if ((req.secretaries ?? 0) > 0) {
+    throw new Error("secretaries are not supported by the rebuilt seeder (designation tag unknown).");
+  }
   if ((req.foreign ?? 0) > req.directors) {
     throw new Error(`foreign (${req.foreign}) cannot exceed directors (${req.directors}).`);
   }
@@ -289,7 +300,7 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
     roc: keys.roc,
     newRoc: keys.newRoc,
     companyName,
-    itemType: SSM_ITEM_TYPE[type],
+    ...(SSM_ITEM_TYPE[type] ? { itemType: SSM_ITEM_TYPE[type] } : {}),
     remark,
     delayMiliSeconds: 0,
     checkDigit: keys.checkDigit ?? null,
@@ -307,6 +318,13 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
   };
   const keep = (col: string) => rebrand(donor[col], donor, keys, companyName);
   const warnings: string[] = [];
+  const people: Record<string, CloneReport> = {};
+  const clone = (col: string, who: OwnerConfig[]) => {
+    const { xml, report } = clonePeople(keep(col), who, type, col);
+    people[col] = report;
+    if (!report.nameTag) warnings.push(`${col}: no name tag found in the person block — names left as the donor's.`);
+    return xml;
+  };
 
   let submissionRow: Row;
   if (type === "ROC") {
@@ -319,8 +337,8 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
         warnings,
       ),
       page2: keep("page2"),
-      page3: rocDirectorsXml(owners),
-      page4: rocShareholdersXml(shareholders),
+      page3: clone("page3", owners),
+      page4: shareholders.length ? clone("page4", shareholders) : keep("page4"),
       page5: keep("page5"),
       page6: keep("page6"),
     };
@@ -333,8 +351,8 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
         "businessInfo",
         warnings,
       ),
-      currentOwnerInfo: robOwnersXml(owners, "CURRENT_OWNER"),
-      previousOwnerInfo: shareholders.length ? robOwnersXml(shareholders, "PREVIOUS_OWNER") : "",
+      currentOwnerInfo: clone("currentOwnerInfo", owners),
+      previousOwnerInfo: shareholders.length ? clone("previousOwnerInfo", shareholders) : keep("previousOwnerInfo"),
     };
   } else {
     submissionRow = {
@@ -343,8 +361,24 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
       regOfficeAdd: keep("regOfficeAdd"),
       regBizAddresses: keep("regBizAddresses"),
       bizCodes: keep("bizCodes"),
-      involvements: llpInvolvementsXml(owners, keys.roc),
+      involvements: clone("involvements", owners),
     };
+  }
+
+  const base = {
+    type,
+    roc: keys.roc,
+    newRoc: keys.newRoc,
+    companyName,
+    expectedCount: countedOwners(type, owners).length,
+    warnings,
+    people,
+    donorId: donor.id,
+    rows: { enquiry: enquiryRow, submission: submissionRow },
+  };
+  if (req.dryRun) {
+    const would = (rows: Row[]) => ({ id: rows[0]?.id, action: rows.length ? ("updated" as const) : ("created" as const) });
+    return { ...base, enquiry: would(existing(enquiry, keys)), submission: would(existing(submissions, keys)) };
   }
 
   const enq = await upsert(sim, SSM_ENQUIRY_ENTITY, existing(enquiry, keys), enquiryRow);
@@ -362,16 +396,7 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
     );
   });
 
-  return {
-    type,
-    roc: keys.roc,
-    newRoc: keys.newRoc,
-    companyName,
-    expectedCount: countedOwners(type, owners).length,
-    enquiry: enq,
-    submission: sub,
-    warnings,
-  };
+  return { ...base, enquiry: enq, submission: sub };
 }
 
 /**
@@ -386,9 +411,12 @@ export async function inspectKeyFormat(
 ): Promise<Record<string, Pick<Row, "roc" | "newRoc" | "checkDigit" | "itemType" | "companyName">[]>> {
   const enquiry = (await sim.list(SSM_ENQUIRY_ENTITY)) as Row[];
   const out: Record<string, Pick<Row, "roc" | "newRoc" | "checkDigit" | "itemType" | "companyName">[]> = {};
-  for (const [type, item] of Object.entries(SSM_ITEM_TYPE)) {
-    out[type] = enquiry
-      .filter((r) => r.itemType === item && !String(r.roc).startsWith("QA"))
+  // itemType values are not known (SSM_ITEM_TYPE is empty), so group by
+  // whatever the rows carry.
+  const types = [...new Set(enquiry.map((r) => String(r.itemType ?? "(none)")))];
+  for (const item of types) {
+    out[item] = enquiry
+      .filter((r) => String(r.itemType ?? "(none)") === item && !String(r.roc).startsWith("QA"))
       .slice(0, sample)
       .map((r) => ({
         roc: r.roc,

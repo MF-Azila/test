@@ -18,9 +18,8 @@
  *
  * The shape of every row is in `@data/ssm-seed` — this file only reads flags.
  */
-import { config as loadEnv } from "dotenv";
-import * as path from "node:path";
-loadEnv({ path: path.join(__dirname, "..", "env", `.${process.env.TEST_ENV ?? "staging"}.env-local`) });
+import { loadSettings } from "./load-env";
+loadSettings();
 
 import { EsimClient, type EsimRecord } from "@fixtures/esim";
 import { SSM_ENQUIRY_ENTITY, SSM_SUBMISSION_ENTITY, type SsmType } from "@data/ssm";

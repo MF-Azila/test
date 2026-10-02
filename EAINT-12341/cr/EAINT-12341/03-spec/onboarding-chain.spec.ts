@@ -9,6 +9,12 @@
 // (see company-ledger.ts) and a one-shot approval, and needs a human for one
 // reCAPTCHA tick.
 //
+// eSim is SET UP BY HAND by the tester before the run (ESIM_SETUP=manual,
+// the default) from 02-plan/EAINT-12341_eSim_Setup.xlsx. ESIM_SETUP=robot
+// makes the robot write it instead (rebuilt client, unverified).
+// Payment is done BY HAND (PAYMENT=manual, the default): the robot opens the
+// payment window and waits for the Pre-Application summary page.
+//
 // Optional identity (open question Q-21), defaults in brackets:
 //   QA_TESTER        name typed as Admin In Charge          ["QA AUTOMATION"]
 //   QA_EMAIL_PREFIX  local part prefix of every address     ["qa.eaint12341"]
@@ -32,8 +38,12 @@ import { completePayment } from "@pages/obs/fiuu.page";
 import { LoginPage } from "@auth/login";
 import { EsimClient } from "@fixtures/esim";
 import { seedCompany, type SeedKeys } from "@data/ssm-seed";
-import { SCENARIOS, type ChainScenario, type ChainType, type Company } from "./chain-scenarios";
+import { SCENARIOS, chainPeople, type ChainScenario, type ChainType, type Company } from "./chain-scenarios";
 import { claim, record } from "./company-ledger";
+import { companyFromSheet } from "@data/company-sheet";
+
+/** The tester fills tab "1 Companies" here; the robot reads it. */
+const COMPANY_SHEET = path.join(__dirname, "..", "02-plan", "EAINT-12341_eSim_Setup.xlsx");
 import { renderExpected, stamp, type RunFacts } from "./expected-emails";
 
 const FIXTURES = path.join(__dirname, "..", "..", "..", "automation", "fixtures", "uploads");
@@ -93,8 +103,11 @@ function companyName(s: ChainScenario): string {
   return `QA ${s.id.replace("_", " ")} ${suffix[s.type]}`;
 }
 
-/** The company to claim — for Business Trading a generated licence stands in for the BRN. */
-function companyFor(s: ChainScenario, runId: string): Company {
+/**
+ * The company to claim — from chain-scenarios.ts, else from the tester's eSim
+ * setup sheet. For Business Trading a generated licence stands in for the BRN.
+ */
+async function companyFor(s: ChainScenario, runId: string): Promise<Company> {
   if (s.type === "TRADING") {
     if (!s.trading?.tin) {
       throw new Error(`${s.id}: no TIN set for the Business Trading chain (open question Q-20). Nothing has been written.`);
@@ -102,13 +115,14 @@ function companyFor(s: ChainScenario, runId: string): Company {
     // Licence: min 4 chars, letters / digits / "/" (pre-application.page.ts).
     return { roc: `QA/12341/${runId.toUpperCase()}`, newRoc: "", tin: s.trading.tin, sheetRow: 0 };
   }
-  if (!s.company) {
+  const company = s.company ?? (await companyFromSheet(s.id, COMPANY_SHEET));
+  if (!company) {
     throw new Error(
-      `${s.id}: no company assigned. Take a PASS row from a fresh company-details-checker sheet and set ` +
-        "`company` in chain-scenarios.ts (open question Q-20). Nothing has been written.",
+      `${s.id}: no company assigned. Fill its row in tab "1 Companies" of ${COMPANY_SHEET} ` +
+        "(PASS row from the company-details-checker sheet). Nothing has been written.",
     );
   }
-  return s.company;
+  return company;
 }
 
 for (const s of SCENARIOS) {
@@ -128,13 +142,15 @@ for (const s of SCENARIOS) {
     const directorEmail = `${EMAIL_PREFIX}.dir.${tag}.${runId}@${EMAIL_DOMAIN}`;
     const name = companyName(s);
     const trading = s.type === "TRADING";
-    const company = companyFor(s, runId);
+    const company = await companyFor(s, runId);
     const showroom = { address: "NO 1, JALAN QA AUTOMATION", postcode: "43000", state: "SELANGOR", city: "BATU CAVES" };
-    // Counted people, named as the seeder names them. Foreign ones come first
-    // (seeder: i < foreign), so the Main User — whose MyKad box takes 12
-    // digits — is the first Malaysian one.
-    const names = Array.from({ length: s.seed.directors }, (_, i) => `QA DIRECTOR ${String.fromCharCode(65 + i)}`);
-    const mainUserIndex = s.seed.foreign ?? 0;
+    // The people in eSim, exactly as the eSim setup sheet lists them.
+    // Malaysians first, so person 0 (QA DIRECTOR A) is the Main User.
+    const people = chainPeople(s);
+    const names = people.map((p) => p.name);
+    const mainUserIndex = 0;
+    const esimByHand = (process.env.ESIM_SETUP ?? "manual").toLowerCase() !== "robot";
+    const payByHand = (process.env.PAYMENT ?? "manual").toLowerCase() !== "auto";
 
     const facts: RunFacts = {
       chainId: s.id,
@@ -159,7 +175,13 @@ for (const s of SCENARIOS) {
     claim(s.id, company);
     let stage = "seed";
     try {
-      if (!trading) {
+      if (!trading && esimByHand) {
+        log(
+          `${NL}=== ${s.id} · eSim set up BY HAND (ESIM_SETUP=manual) — the robot does not touch eSim.` +
+            `${NL}    Expected in eSim: ${company.roc} / ${company.newRoc}, ${people.length} people: ` +
+            people.map((p) => `${p.name} ${s.type === "ROC" ? p.icDashed : p.icPlain}`).join(", "),
+        );
+      } else if (!trading) {
         const esim = new EsimClient();
         await esim.connect();
         const seeded = await seedCompany(esim, {
@@ -238,11 +260,18 @@ for (const s of SCENARIOS) {
       const gatewayOpens = context.waitForEvent("page", { timeout: 60_000 }).catch(() => null);
       await preApp.submitAndPay(30_000);
       const gateway = await gatewayOpens;
-      if (!gateway) throw new Error("The FPX gateway never opened its window.");
-      await gateway.waitForLoadState("domcontentloaded").catch(() => undefined);
-      await completePayment(gateway);
-
-      await page.waitForURL(/\/obs\/preOnb\/summary\//, { timeout: 180_000 });
+      if (payByHand) {
+        log(
+          `${NL}*** PAYMENT — please complete the payment in the payment window${gateway ? "" : " (or the main window)"}. ***` +
+            `${NL}    The robot waits up to ${Math.round(gateMs / 60_000)} minutes for the Pre-Application summary page.${NL}`,
+        );
+        await page.waitForURL(/\/obs\/preOnb\/summary\//, { timeout: gateMs });
+      } else {
+        if (!gateway) throw new Error("The FPX gateway never opened its window.");
+        await gateway.waitForLoadState("domcontentloaded").catch(() => undefined);
+        await completePayment(gateway);
+        await page.waitForURL(/\/obs\/preOnb\/summary\//, { timeout: 180_000 });
+      }
       const summary = (await page.locator("body").innerText()).replace(/\s+/g, " ");
       const preAppNo = summary.match(/P\d{6}\/\d{5}/)?.[0];
       if (!preAppNo) throw new Error("Paid, but no Pre-Application number on the summary page.");
@@ -288,7 +317,7 @@ for (const s of SCENARIOS) {
         directorEmail,
         picMyKad: "690501137631",
         directorName: names[mainUserIndex],
-        directorMyKad: `${690501 + mainUserIndex}13${7631 + mainUserIndex}`,
+        directorMyKad: people[mainUserIndex].icPlain,
       };
       await application.fillBusinessInformation(details);
       await application.goToUploads();

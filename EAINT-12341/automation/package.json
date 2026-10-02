@@ -1,0 +1,28 @@
+{
+  "name": "eaint-12341-automation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EAINT-12341 onboarding chain (Pre-Application → Application → approval) on eAuto staging.",
+  "scripts": {
+    "check": "tsc -p tsconfig.json && tsc -p ../cr/tsconfig.json",
+    "list": "playwright test --project=cr --list",
+    "ch1": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH1 playwright test --project=cr",
+    "ch2": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH2 playwright test --project=cr",
+    "ch3": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH3 playwright test --project=cr",
+    "ch4": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH4 playwright test --project=cr",
+    "ch5": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH5 playwright test --project=cr",
+    "ch6": "cross-env HEADED=1 CHAIN_SCENARIO=12341_CH6 playwright test --project=cr",
+    "report": "playwright show-report",
+    "esim:check": "tsx scripts/esim-check.ts",
+    "preview": "tsx scripts/preview-chain.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.0.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

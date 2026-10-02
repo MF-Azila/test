@@ -1,0 +1,38 @@
+# EAINT-12341 automation settings — TEMPLATE.
+#
+# Copy this file to   env/.staging.env-local   and fill in the passwords THERE.
+# The .env-local file is never uploaded to GitHub (see .gitignore).
+# Never put a password in this template.
+
+# ── Staging ─────────────────────────────────────────────────────────────
+BASE_URL=https://staging.eauto.my
+LOGIN_URL=https://staging.eauto.my/uat4/public/login/
+
+# ── BackOffice accounts ─────────────────────────────────────────────────
+# Approver (approves the Pre-Application and the Application)
+BO_USERNAME=kmcheah
+BO_PASSWORD=
+# Assignee (submits the Application for approval) — a different account
+BO_ADMIN_USERNAME=eautosoyeng
+BO_ADMIN_PASSWORD=
+
+# ── eSim (SSM simulator) ────────────────────────────────────────────────
+ESIM_URL=https://172.30.202.114:9089/esim
+ESIM_USERNAME=admin
+ESIM_PASSWORD=
+
+# ── Payment ─────────────────────────────────────────────────────────────
+# manual = the robot opens the payment window and waits for you to pay.
+PAYMENT=manual
+# Only used if PAYMENT=auto (bank simulator login). Leave empty for manual.
+FIUU_USERNAME=
+FIUU_PASSWORD=
+
+# ── Who the robot is (typed into the forms) ─────────────────────────────
+QA_TESTER=QA AUTOMATION
+QA_EMAIL_PREFIX=qa.eaint12341
+QA_EMAIL_DOMAIN=modefair.com
+
+# ── Waiting for you ─────────────────────────────────────────────────────
+# Minutes the robot waits for you (reCAPTCHA, payment, manual login).
+GATE_MINUTES=20

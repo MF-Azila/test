@@ -1,0 +1,25 @@
+{
+  "//": "Path aliases used by the page objects and the CR specs. Playwright and tsx both read them.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@fixtures": ["src/fixtures/index.ts"],
+      "@fixtures/*": ["src/fixtures/*"],
+      "@auth/*": ["src/auth/*"],
+      "@data/*": ["src/data/*"],
+      "@pages/*": ["src/pages/*"],
+      "@config/*": ["config/*"]
+    }
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "test-results", "playwright-report"]
+}

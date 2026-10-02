@@ -22,6 +22,17 @@ function envFile(): string {
 loadEnv({ path: envFile(), override: true });
 
 const headed = process.env.HEADED === "1" || process.env.MODE === "HEADED";
+
+/**
+ * Which browser. Default: the Google Chrome installed on the laptop.
+ * BROWSER_CHANNEL=msedge uses Microsoft Edge instead (also real, not bundled).
+ * BROWSER_PATH=<exe> points at a specific browser program (used for checks
+ * on machines without Chrome).
+ */
+const browserPath = process.env.BROWSER_PATH?.trim();
+const browser = browserPath
+  ? { launchOptions: { executablePath: browserPath } }
+  : { channel: (process.env.BROWSER_CHANNEL || "chrome").trim() };
 const runId = process.env.RUN_ID || new Date().toISOString().replace(/[:.]/g, "-");
 
 // `--list` executes nothing, but a reporter attached unconditionally still
@@ -49,8 +60,8 @@ export default defineConfig({
    * does not.
    */
   workers: process.env.PLAYWRIGHT_WORKERS ? parseInt(process.env.PLAYWRIGHT_WORKERS, 10) : 1,
-  // A retry spends another vehicle number and another mobile/email use.
-  retries: process.env.CI ? 1 : 0,
+  // NEVER retry: a retry spends another real company (one company, one use).
+  retries: 0,
   forbidOnly: !!process.env.CI,
 
   reporter: listingOnly
@@ -96,34 +107,17 @@ export default defineConfig({
       name: "cr",
       testDir: "../cr",
       testMatch: "**/03-spec/**/*.spec.ts",
-      use: { ...devices["Desktop Chrome"], channel: "chrome" },
+      use: {
+        ...devices["Desktop Chrome"],
+        ...browser,
+        launchOptions: {
+          args: ["--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests"],
+          ...(browserPath ? { executablePath: browserPath } : {}),
+        },
+      },
     },
-    {
-      name: "staging",
-      testDir: "./tests/staging",
-      testMatch: "**/*.@(e2e|func).spec.ts",
-      // Real Chrome, not bundled Chromium: the activation page runs a browser
-      // check that shows Chromium a "use Firefox 36" gate and lets Chrome
-      // through, and every card-reading flow can end up behind it.
-      use: { ...devices["Desktop Chrome"], channel: "chrome" },
-    },
-    {
-      // Production is a READ-ONLY suite. The grepInvert is the mechanical half
-      // of that promise — nothing tagged @destructive can be selected here.
-      name: "production",
-      testDir: "./tests/production",
-      testMatch: "**/*.func.spec.ts",
-      grepInvert: /@destructive/,
-      use: { ...devices["Desktop Chrome"], channel: "chrome" },
-    },
-    {
-      // Tools wearing a spec's clothes. Outside both environment trees on
-      // purpose, so neither project can pick them up.
-      name: "explore",
-      testDir: "./tests/_explore",
-      // Real Chrome here too: a probe that walks a card-reading screen hits the
-      // same "use Firefox 36" gate the staging project does.
-      use: { ...devices["Desktop Chrome"], channel: "chrome" },
-    },
+    // The full team project also had "staging", "production" and "explore"
+    // projects. Their test folders were not in the handover, so they are not
+    // declared here. Only the CR project runs.
   ],
 });
