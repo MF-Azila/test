@@ -54,6 +54,8 @@ Help me set up eSim for run CH1 of EAINT-12341, using the Playwright browser so 
 
 Source of truth: C:\QA\eaint-12341\EAINT-12341\cr\EAINT-12341\02-plan\EAINT-12341_eSim_Setup.xlsx
 - Read tab "1 Companies" (the row for CH1) and tab "CH1".
+  If the yellow cells of the CH1 row are empty, ask me for the company numbers (ROC/ROB/LLP no. with letter, 12-digit
+  new no., TIN, checker row), type them into that row for me, save the Excel and close it.
 - The green cells are formulas. Work their values out from tab 1: "Roc" = the number WITHOUT the last "-<letter>",
   "Check Digit" = that letter, and the REF_NO / BUSINESS_REF_NO tags use the number WITH the letter.
   An LLP number ending in "-LGN" is never split.
@@ -69,6 +71,10 @@ Rules:
 4. In the big text boxes change ONLY what tab CH1 lists: the REF_NO / BUSINESS_REF_NO tag, NEW_REF_NO, the status tag,
    and the people. For the people: keep one existing person block as the pattern, make exactly the number of blocks the
    tab lists, set the name and IC in each, and remove any extra blocks. Leave everything else exactly as it was.
+   Use only a pattern block whose ID Type is "01 – NRIC" with a 12-digit ID No. (never one like "RA0009999").
+   LLP (CH6): partners are "PT – Partner" with Entity No. = the LLP number, plus exactly 1 "CO – Compliance Officer"
+   block = Partner A's details with Entity No. blank — as tab CH6 says.
+   Foreign director (CH2): STOP before typing it and show me which ID Type options eSim offers; I will choose.
 5. After saving, open both records again and check the saved values. Save screenshots to
    C:\QA\eaint-12341\EAINT-12341\cr\EAINT-12341\05-evidence\CH1\
 6. Tell me the ids of the records you changed, and give me a short summary I can send to QA support.

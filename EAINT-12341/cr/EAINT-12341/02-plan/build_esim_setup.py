@@ -188,13 +188,22 @@ def run_tab(r):
         sec(f"Part B — text box 'Page 3': exactly {r['people']} director blocks (designation DIRECTOR)")
         icfield, key = "<IC> (with dashes)", "dashed"
     else:
-        sec("Part B — LLP is NOT in the eSimulator guide — send QA support a screenshot of one LLP record first")
-        line("Registration number tag", f'={need(full)}', "Whatever tag holds the LLP number — WITH '-LGN'", True)
-        line("New number tag", f"={need(new)}", "", True)
-        line("Status tag", "active / existing", "Same idea as ROB / ROC — confirm on the screenshot")
+        sec("Part B — LLP record (from the QA's eSim screenshot, 02.10.2026)")
+        line("LLP number", f'={need(full)}', "WITH '-LGN' — never split", True)
+        line("New number", f"={need(new)}", "12 digits", True)
         row += 1
-        sec(f"Part B — text box 'Involvements': exactly {r['people']} partner blocks (type PT, no compliance officer)")
-        icfield, key = "IC (no dashes)", "plain"
+        sec(f"Part B — 'Involvements': {r['people']} PARTNER blocks + 1 COMPLIANCE OFFICER block")
+        line("Pattern", "Copy an existing 'PT – Partner' block whose ID No. is a 12-digit NRIC",
+             "Do NOT copy a block whose ID No. is not 12 digits (e.g. RA0009999)")
+        line("Type (each partner)", "PT – Partner")
+        line("ID Type (each partner)", "01 – NRIC")
+        line("Entity No. (each partner)", f'={need(full)}', "Your LLP number", True)
+        line("Address / postcode / others", "leave as copied")
+        line("Compliance Officer block", "Type CO – Compliance Officer · ID Type 01 – NRIC · ID No. 690501137631 · Name QA DIRECTOR A · Entity No. blank",
+             "Same person as Partner A (as in the existing record). Keep exactly 1 CO.")
+        line("Delete", "Any other partner / CO blocks from the copied record")
+        row += 1
+        icfield, key = "ID No. (NRIC, no dashes)", "plain"
     for p in people(r["people"], r["foreign"]):
         line(f"Person {p['name'][-1]} — name", p["name"], "Foreign director — ID format to confirm" if p["foreign"] else "Malaysian")
         line(f"Person {p['name'][-1]} — {icfield}", p[key])
