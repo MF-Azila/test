@@ -6,21 +6,35 @@ meta:
   generated_by: 02-plan/build_test_cases.py — do not hand-edit
 runs:
 - id: CH1
+  btype: Sdn Bhd / Bhd
+  kind: ROC
+  people: 4 directors, all Malaysian
+  tin: C
+  brn: <ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307)
+  note: Main run — do it first. Carries the extra checks CH1-20 (old email) and CH1-21 (hardcopy regression).
+  main: true
+- id: CH2
+  btype: Sdn Bhd / Bhd
+  kind: ROC
+  people: '3 directors: 2 Malaysian + 1 foreigner'
+  tin: C
+  brn: <ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307)
+  note: REQ-005 Example 2 (foreign director) — must get the SAME email as CH1.
+- id: CH3
   btype: Sole Proprietorship / Partnership
   kind: ROB
   people: 4 business owners, all Malaysian
   tin: D
   brn: <ROB no. with letter> (<12-digit no.>), e.g. 003123456-X (202103123456)
-  note: Main run — do it first. Carries the extra checks CH1-20 (old email) and CH1-21 (hardcopy regression).
-  main: true
-- id: CH2
+  note: Sole Proprietorship / Partnership normal case (REQ-005 Example 1).
+- id: CH4
   btype: Sole Proprietorship / Partnership
   kind: ROB
   people: 5 business owners, all Malaysian
   tin: D
-  brn: <ROB no. with letter> (<12-digit no.>)
+  brn: <ROB no. with letter> (<12-digit no.>), e.g. 003123456-X (202103123456)
   note: REQ-005 Example 2 (5 or more owners) — must get the SAME email as CH1.
-- id: CH6
+- id: CH5
   btype: Sole Proprietorship / Partnership
   kind: ROB
   people: 4 business owners, all Malaysian
@@ -28,35 +42,21 @@ runs:
   brn: ''
   note: Stops at Submitted — no-email checks, then a manual Revert to UCD.
   negative: true
-- id: CH3
-  btype: Sdn Bhd / Bhd
-  kind: ROC
-  people: '3 directors: 2 Malaysian + 1 foreigner'
-  tin: C
-  brn: <ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307)
-  note: REQ-005 Example 2 (foreign director) — must get the SAME email as CH1.
-- id: CH8
-  btype: Sdn Bhd / Bhd
-  kind: ROC
-  people: 4 directors, all Malaysian
-  tin: C
-  brn: <ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307)
-  note: Normal Sdn Bhd case (REQ-005 Example 1).
-- id: CH4
+- id: CH6
   btype: LLP
   kind: LLP
   people: 4 partners, all Malaysian
   tin: PT
   brn: <LLP no. incl. -LGN> (<12-digit no.>), e.g. LLP0035174-LGN (202304001238)
   note: LLP is not in the eSimulator guide — confirm the eSim screen first.
-- id: CH5
+- id: CH7
   btype: Business Trading (Sabah)
   kind: TRADING
   people: 2 directors (typed by the robot)
   tin: any valid (Q-20)
   brn: TBC — no SSM details for Business Trading (Q-09)
   note: Non-SSM. No eSim. Letter registration number expected result is TBC (red).
-- id: CH7
+- id: CH8
   btype: Business Trading (Sarawak)
   kind: TRADING
   people: 2 directors (typed by the robot)
@@ -66,10 +66,10 @@ runs:
 cases:
 - tc: CH1-01
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Setup & Flow
-  scenario: eSim set up for CH1 — Sole Proprietorship / Partnership, 4 business owners, all Malaysian
-  pre: A PASS company from the checker sheet (TIN starts with D) typed in tab '1 Companies'. VPN on.
+  scenario: eSim set up for CH1 — Sdn Bhd / Bhd, 4 directors, all Malaysian
+  pre: A PASS company from the checker sheet (TIN starts with C) typed in tab '1 Companies'. VPN on.
   steps: '1. Log in to eSim: https://172.30.202.114:9089/esim/login.
 
     2. Open tab ''CH1'' of EAINT-12341_eSim_Setup.xlsx.
@@ -81,7 +81,7 @@ cases:
     5. Screenshot both saved records.'
   expected: '1. Ssm Enquiry Resp saved with Response Code 004, the ROC without its letter, the 12-digit number, Delay 0.
 
-    2. Submission record saved with Response Code 005, status ACTIVE/EXISTING and exactly 4 business owners.
+    2. Submission record saved with Response Code 005, status ACTIVE/EXISTING and exactly 4 directors.
 
     3. No error message on save.'
   req: Test data (eSimulator guide)
@@ -91,7 +91,7 @@ cases:
   tbc: false
 - tc: CH1-02
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Setup & Flow
   scenario: Robot runs CH1 to Application Approved
   pre: CH1-01 passed. VPN on. Settings file filled. Mailtrap open.
@@ -118,7 +118,7 @@ cases:
   tbc: false
 - tc: CH1-03
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Setup & Flow
   scenario: Pre-Application summary shows the SSM details set up in eSim
   pre: CH1-02 reached at least Pre-Application approved.
@@ -129,10 +129,10 @@ cases:
     3. Open the record and its SSM details.'
   expected: '1. SSM Status = OK.
 
-    2. Registration no. = <ROB no. with letter> (<12-digit no.>) exactly as in tab ''1 Companies'' (letter not doubled, e.g.
+    2. Registration no. = <ROC no. with letter> (<12-digit no.>) exactly as in tab ''1 Companies'' (letter not doubled, e.g.
     no ''-U-A'').
 
-    3. The people listed match the eSim setup (4 business owners, all Malaysian).
+    3. The people listed match the eSim setup (4 directors, all Malaysian).
 
     4. These are the values the Appointment Letter must use (old / new BRN).'
   req: REQ-007 (letter data source)
@@ -142,7 +142,7 @@ cases:
   tbc: false
 - tc: CH1-04
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Negative & Regression
   scenario: Pre-Application approval does NOT send the new emails
   pre: CH1-02 reached at least Pre-Application approved.
@@ -161,7 +161,7 @@ cases:
   tbc: false
 - tc: CH1-05
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Guideline email is received by the UCD — To and CC
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -185,7 +185,7 @@ cases:
   tbc: false
 - tc: CH1-06
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Guideline email subject
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -205,7 +205,7 @@ cases:
   tbc: false
 - tc: CH1-07
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Guideline email body — same combined template (online + branch options)
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -235,7 +235,7 @@ cases:
   tbc: false
 - tc: CH1-08
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Links in the guideline email
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -261,7 +261,7 @@ cases:
   tbc: false
 - tc: CH1-09
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Appointment Letter attached to the guideline email
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -285,7 +285,7 @@ cases:
   tbc: false
 - tc: CH1-10
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Removed templates are not sent
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -301,7 +301,7 @@ cases:
   tbc: false
 - tc: CH1-11
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: RHB Support Email
   scenario: RHB Support email — To and CC
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -325,7 +325,7 @@ cases:
   tbc: false
 - tc: CH1-12
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: RHB Support Email
   scenario: RHB Support email subject
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -345,7 +345,7 @@ cases:
   tbc: false
 - tc: CH1-13
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: RHB Support Email
   scenario: RHB Support email body — values and wording
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -369,7 +369,7 @@ cases:
   tbc: false
 - tc: CH1-14
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: RHB Support Email
   scenario: Appointment Letter attached to the RHB Support email
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -387,7 +387,7 @@ cases:
   tbc: false
 - tc: CH1-15
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Appointment Letter
   scenario: Appointment Letter layout and fixed text
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -417,7 +417,7 @@ cases:
   tbc: false
 - tc: CH1-16
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Appointment Letter
   scenario: Appointment Letter pre-filled values
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -431,7 +431,7 @@ cases:
 
     3. UCD Company Name = the Application''s company name (recipient block, Clause 1, Clause 4).
 
-    4. Company Registration No. = <ROB no. with letter> (<12-digit no.>), e.g. 003123456-X (202103123456) — identical in recipient
+    4. Company Registration No. = <ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307) — identical in recipient
     block, Clause 1 and Clause 4.
 
     5. Company Address = the Application''s company address (which field: Q-06).
@@ -444,7 +444,7 @@ cases:
   tbc: false
 - tc: CH1-17
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Appointment Letter
   scenario: Same Appointment Letter on both emails
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -462,7 +462,7 @@ cases:
   tbc: false
 - tc: CH1-18
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Negative & Regression
   scenario: No unresolved placeholders anywhere
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -482,7 +482,7 @@ cases:
   tbc: false
 - tc: CH1-19
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Negative & Regression
   scenario: Exactly one of each email per approval (no duplicates)
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -500,7 +500,7 @@ cases:
   tbc: false
 - tc: CH1-20
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Negative & Regression
   scenario: Old approved-application email (3 RHB documents) is NOT sent
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -518,7 +518,7 @@ cases:
   tbc: false
 - tc: CH1-21
   run: CH1
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Negative & Regression
   scenario: Hardcopy resubmission still works after approval (EAINT-11763)
   pre: CH1-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -544,10 +544,10 @@ cases:
   tbc: false
 - tc: CH2-01
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Setup & Flow
-  scenario: eSim set up for CH2 — Sole Proprietorship / Partnership, 5 business owners, all Malaysian
-  pre: A PASS company from the checker sheet (TIN starts with D) typed in tab '1 Companies'. VPN on.
+  scenario: 'eSim set up for CH2 — Sdn Bhd / Bhd, 3 directors: 2 Malaysian + 1 foreigner'
+  pre: A PASS company from the checker sheet (TIN starts with C) typed in tab '1 Companies'. VPN on.
   steps: '1. Log in to eSim: https://172.30.202.114:9089/esim/login.
 
     2. Open tab ''CH2'' of EAINT-12341_eSim_Setup.xlsx.
@@ -559,7 +559,7 @@ cases:
     5. Screenshot both saved records.'
   expected: '1. Ssm Enquiry Resp saved with Response Code 004, the ROC without its letter, the 12-digit number, Delay 0.
 
-    2. Submission record saved with Response Code 005, status ACTIVE/EXISTING and exactly 5 business owners.
+    2. Submission record saved with Response Code 005, status ACTIVE/EXISTING and exactly 3 directors.
 
     3. No error message on save.'
   req: Test data (eSimulator guide)
@@ -569,7 +569,7 @@ cases:
   tbc: false
 - tc: CH2-02
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Setup & Flow
   scenario: Robot runs CH2 to Application Approved
   pre: CH2-01 passed. VPN on. Settings file filled. Mailtrap open.
@@ -596,7 +596,7 @@ cases:
   tbc: false
 - tc: CH2-03
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Setup & Flow
   scenario: Pre-Application summary shows the SSM details set up in eSim
   pre: CH2-02 reached at least Pre-Application approved.
@@ -607,10 +607,10 @@ cases:
     3. Open the record and its SSM details.'
   expected: '1. SSM Status = OK.
 
-    2. Registration no. = <ROB no. with letter> (<12-digit no.>) exactly as in tab ''1 Companies'' (letter not doubled, e.g.
+    2. Registration no. = <ROC no. with letter> (<12-digit no.>) exactly as in tab ''1 Companies'' (letter not doubled, e.g.
     no ''-U-A'').
 
-    3. The people listed match the eSim setup (5 business owners, all Malaysian).
+    3. The people listed match the eSim setup (3 directors: 2 Malaysian + 1 foreigner).
 
     4. These are the values the Appointment Letter must use (old / new BRN).'
   req: REQ-007 (letter data source)
@@ -620,7 +620,7 @@ cases:
   tbc: false
 - tc: CH2-04
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Negative & Regression
   scenario: Pre-Application approval does NOT send the new emails
   pre: CH2-02 reached at least Pre-Application approved.
@@ -639,7 +639,7 @@ cases:
   tbc: false
 - tc: CH2-05
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Guideline email is received by the UCD — To and CC
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -663,7 +663,7 @@ cases:
   tbc: false
 - tc: CH2-06
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Guideline email subject
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -683,7 +683,7 @@ cases:
   tbc: false
 - tc: CH2-07
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Guideline email body — same combined template (online + branch options)
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -709,11 +709,11 @@ cases:
   prio: High
   ttype: Functional
   remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. REQ-005
-    Example 2 (5 or more owners) — must get the SAME email as CH1.
+    Example 2 (foreign director) — must get the SAME email as CH1.
   tbc: false
 - tc: CH2-08
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Links in the guideline email
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -731,7 +731,7 @@ cases:
   tbc: false
 - tc: CH2-09
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Appointment Letter attached to the guideline email
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -755,7 +755,7 @@ cases:
   tbc: false
 - tc: CH2-10
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Guideline Email (UCD)
   scenario: Removed templates are not sent
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -771,7 +771,7 @@ cases:
   tbc: false
 - tc: CH2-11
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: RHB Support Email
   scenario: RHB Support email — To and CC
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -795,7 +795,7 @@ cases:
   tbc: false
 - tc: CH2-12
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: RHB Support Email
   scenario: RHB Support email subject
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -815,7 +815,7 @@ cases:
   tbc: false
 - tc: CH2-13
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: RHB Support Email
   scenario: RHB Support email body — values and wording
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -839,7 +839,7 @@ cases:
   tbc: false
 - tc: CH2-14
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: RHB Support Email
   scenario: Appointment Letter attached to the RHB Support email
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -857,7 +857,7 @@ cases:
   tbc: false
 - tc: CH2-15
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Appointment Letter
   scenario: Appointment Letter layout and fixed text
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -887,7 +887,7 @@ cases:
   tbc: false
 - tc: CH2-16
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Appointment Letter
   scenario: Appointment Letter pre-filled values
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -901,8 +901,8 @@ cases:
 
     3. UCD Company Name = the Application''s company name (recipient block, Clause 1, Clause 4).
 
-    4. Company Registration No. = <ROB no. with letter> (<12-digit no.>) — identical in recipient block, Clause 1 and Clause
-    4.
+    4. Company Registration No. = <ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307) — identical in recipient
+    block, Clause 1 and Clause 4.
 
     5. Company Address = the Application''s company address (which field: Q-06).
 
@@ -914,7 +914,7 @@ cases:
   tbc: false
 - tc: CH2-17
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Appointment Letter
   scenario: Same Appointment Letter on both emails
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -932,7 +932,7 @@ cases:
   tbc: false
 - tc: CH2-18
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Negative & Regression
   scenario: No unresolved placeholders anywhere
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -952,7 +952,7 @@ cases:
   tbc: false
 - tc: CH2-19
   run: CH2
-  btype: Sole Proprietorship / Partnership
+  btype: Sdn Bhd / Bhd
   area: Negative & Regression
   scenario: Exactly one of each email per approval (no duplicates)
   pre: CH2-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -968,15 +968,15 @@ cases:
   ttype: Negative
   remarks: ''
   tbc: false
-- tc: CH6-01
-  run: CH6
+- tc: CH3-01
+  run: CH3
   btype: Sole Proprietorship / Partnership
   area: Setup & Flow
-  scenario: eSim set up for CH6 — Sole Proprietorship / Partnership, 4 business owners, all Malaysian
-  pre: A PASS company from the checker sheet (TIN starts with D (or IG)) typed in tab '1 Companies'. VPN on.
+  scenario: eSim set up for CH3 — Sole Proprietorship / Partnership, 4 business owners, all Malaysian
+  pre: A PASS company from the checker sheet (TIN starts with D) typed in tab '1 Companies'. VPN on.
   steps: '1. Log in to eSim: https://172.30.202.114:9089/esim/login.
 
-    2. Open tab ''CH6'' of EAINT-12341_eSim_Setup.xlsx.
+    2. Open tab ''CH3'' of EAINT-12341_eSim_Setup.xlsx.
 
     3. Screen ''Ssm Enquiry Resp'': type every value of Part A, then Save.
 
@@ -993,147 +993,9 @@ cases:
   ttype: Setup
   remarks: ''
   tbc: false
-- tc: CH6-02
-  run: CH6
-  btype: Sole Proprietorship / Partnership
-  area: Setup & Flow
-  scenario: Robot runs CH6 to Application Submitted
-  pre: CH6-01 passed. VPN on. Settings file filled. Mailtrap open.
-  steps: '1. In the automation folder run: npm run ch6.
-
-    2. Tick ''I''m not a robot'' when the window asks.
-
-    3. Pay in the payment window when the window asks.
-
-    4. Do not click anything else; wait for the end of the run.
-
-    5. Copy the black-window text and keep it with the evidence.'
-  expected: '1. The Pre-Application is created, paid and approved (Pre-Application No P……/….. printed).
-
-    2. The Application is submitted (the run stops here by design).
-
-    3. The window shows ''READY FOR MANUAL EMAIL CHECK'' — stopped at Application Submitted.
-
-    4. An expected-email file is created in 04-runs/.'
-  req: REQ-001 (trigger)
-  prio: High
-  ttype: E2E flow (automation)
-  remarks: ''
-  tbc: false
-- tc: CH6-03
-  run: CH6
-  btype: Sole Proprietorship / Partnership
-  area: Setup & Flow
-  scenario: Pre-Application summary shows the SSM details set up in eSim
-  pre: CH6-02 reached at least Pre-Application approved.
-  steps: '1. BackOffice > Pre-Application listing: search the Pre-Application No.
-
-    2. Check the SSM Status column.
-
-    3. Open the record and its SSM details.'
-  expected: '1. SSM Status = OK.
-
-    2. Registration no. =  exactly as in tab ''1 Companies'' (letter not doubled, e.g. no ''-U-A'').
-
-    3. The people listed match the eSim setup (4 business owners, all Malaysian).
-
-    4. These are the values the Appointment Letter must use (old / new BRN).'
-  req: REQ-007 (letter data source)
-  prio: High
-  ttype: Data
-  remarks: ''
-  tbc: false
-- tc: CH6-04
-  run: CH6
-  btype: Sole Proprietorship / Partnership
-  area: Negative & Regression
-  scenario: Pre-Application approval does NOT send the new emails
-  pre: CH6-02 reached at least Pre-Application approved.
-  steps: '1. Take the ''pre-app approved'' and ''approved'' (or ''submitted'') times from the run log.
-
-    2. In Mailtrap, list all emails to the run''s admin and director email addresses between those two times.'
-  expected: '1. No ''RHB Online / Branch Account Opening'' email in that window.
-
-    2. No ''Approved eAuto Registration'' email in that window.
-
-    3. The existing Pre-Application approval email (with the Application link) still arrives as before.'
-  req: REQ-001
-  prio: Medium
-  ttype: Negative
-  remarks: ''
-  tbc: false
-- tc: CH6-05
-  run: CH6
-  btype: Sole Proprietorship / Partnership
-  area: Negative & Regression
-  scenario: No new email while the Application is at Submitted
-  pre: CH6-02 passed (Application Submitted).
-  steps: '1. Note the ''submitted'' time from the run log.
-
-    2. Wait 10 minutes (quiet window, Q-16).
-
-    3. In Mailtrap, list emails to the run''s admin and director addresses after that time.'
-  expected: '1. No ''RHB Online / Branch Account Opening'' email.
-
-    2. No ''Approved eAuto Registration'' email.'
-  req: REQ-001
-  prio: High
-  ttype: Negative
-  remarks: ''
-  tbc: false
-- tc: CH6-06
-  run: CH6
-  btype: Sole Proprietorship / Partnership
-  area: Negative & Regression
-  scenario: No new email after Revert to UCD
-  pre: CH6-03 passed.
-  steps: '1. BackOffice > Application listing: open the run''s Application.
-
-    2. Revert it to UCD (role / button per Q-15). Note the time.
-
-    3. Wait 10 minutes.
-
-    4. In Mailtrap, list emails to the run''s addresses after the revert.'
-  expected: '1. The Application status changes to the reverted status as before.
-
-    2. No ''RHB Online / Branch Account Opening'' email.
-
-    3. No ''Approved eAuto Registration'' email.
-
-    4. Any existing revert notification is unchanged.'
-  req: REQ-001
-  prio: High
-  ttype: Negative
-  remarks: ''
-  tbc: false
-- tc: CH3-01
-  run: CH3
-  btype: Sdn Bhd / Bhd
-  area: Setup & Flow
-  scenario: 'eSim set up for CH3 — Sdn Bhd / Bhd, 3 directors: 2 Malaysian + 1 foreigner'
-  pre: A PASS company from the checker sheet (TIN starts with C) typed in tab '1 Companies'. VPN on.
-  steps: '1. Log in to eSim: https://172.30.202.114:9089/esim/login.
-
-    2. Open tab ''CH3'' of EAINT-12341_eSim_Setup.xlsx.
-
-    3. Screen ''Ssm Enquiry Resp'': type every value of Part A, then Save.
-
-    4. Submission screen: type every value of Part B (including the tags and the people), then Save.
-
-    5. Screenshot both saved records.'
-  expected: '1. Ssm Enquiry Resp saved with Response Code 004, the ROC without its letter, the 12-digit number, Delay 0.
-
-    2. Submission record saved with Response Code 005, status ACTIVE/EXISTING and exactly 3 directors.
-
-    3. No error message on save.'
-  req: Test data (eSimulator guide)
-  prio: High
-  ttype: Setup
-  remarks: ''
-  tbc: false
 - tc: CH3-02
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Setup & Flow
   scenario: Robot runs CH3 to Application Approved
   pre: CH3-01 passed. VPN on. Settings file filled. Mailtrap open.
@@ -1160,7 +1022,7 @@ cases:
   tbc: false
 - tc: CH3-03
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Setup & Flow
   scenario: Pre-Application summary shows the SSM details set up in eSim
   pre: CH3-02 reached at least Pre-Application approved.
@@ -1171,10 +1033,10 @@ cases:
     3. Open the record and its SSM details.'
   expected: '1. SSM Status = OK.
 
-    2. Registration no. = <ROC no. with letter> (<12-digit no.>) exactly as in tab ''1 Companies'' (letter not doubled, e.g.
+    2. Registration no. = <ROB no. with letter> (<12-digit no.>) exactly as in tab ''1 Companies'' (letter not doubled, e.g.
     no ''-U-A'').
 
-    3. The people listed match the eSim setup (3 directors: 2 Malaysian + 1 foreigner).
+    3. The people listed match the eSim setup (4 business owners, all Malaysian).
 
     4. These are the values the Appointment Letter must use (old / new BRN).'
   req: REQ-007 (letter data source)
@@ -1184,7 +1046,7 @@ cases:
   tbc: false
 - tc: CH3-04
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Negative & Regression
   scenario: Pre-Application approval does NOT send the new emails
   pre: CH3-02 reached at least Pre-Application approved.
@@ -1203,7 +1065,7 @@ cases:
   tbc: false
 - tc: CH3-05
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Guideline email is received by the UCD — To and CC
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1227,7 +1089,7 @@ cases:
   tbc: false
 - tc: CH3-06
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Guideline email subject
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1247,7 +1109,7 @@ cases:
   tbc: false
 - tc: CH3-07
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Guideline email body — same combined template (online + branch options)
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1272,12 +1134,12 @@ cases:
   req: REQ-005
   prio: High
   ttype: Functional
-  remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. REQ-005
-    Example 2 (foreign director) — must get the SAME email as CH1.
+  remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. Sole Proprietorship
+    / Partnership normal case (REQ-005 Example 1).
   tbc: false
 - tc: CH3-08
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Links in the guideline email
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1295,7 +1157,7 @@ cases:
   tbc: false
 - tc: CH3-09
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Appointment Letter attached to the guideline email
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1319,7 +1181,7 @@ cases:
   tbc: false
 - tc: CH3-10
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Removed templates are not sent
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1335,7 +1197,7 @@ cases:
   tbc: false
 - tc: CH3-11
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: RHB Support Email
   scenario: RHB Support email — To and CC
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1359,7 +1221,7 @@ cases:
   tbc: false
 - tc: CH3-12
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: RHB Support Email
   scenario: RHB Support email subject
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1379,7 +1241,7 @@ cases:
   tbc: false
 - tc: CH3-13
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: RHB Support Email
   scenario: RHB Support email body — values and wording
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1403,7 +1265,7 @@ cases:
   tbc: false
 - tc: CH3-14
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: RHB Support Email
   scenario: Appointment Letter attached to the RHB Support email
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1421,7 +1283,7 @@ cases:
   tbc: false
 - tc: CH3-15
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Appointment Letter
   scenario: Appointment Letter layout and fixed text
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1451,7 +1313,7 @@ cases:
   tbc: false
 - tc: CH3-16
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Appointment Letter
   scenario: Appointment Letter pre-filled values
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1465,7 +1327,7 @@ cases:
 
     3. UCD Company Name = the Application''s company name (recipient block, Clause 1, Clause 4).
 
-    4. Company Registration No. = <ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307) — identical in recipient
+    4. Company Registration No. = <ROB no. with letter> (<12-digit no.>), e.g. 003123456-X (202103123456) — identical in recipient
     block, Clause 1 and Clause 4.
 
     5. Company Address = the Application''s company address (which field: Q-06).
@@ -1478,7 +1340,7 @@ cases:
   tbc: false
 - tc: CH3-17
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Appointment Letter
   scenario: Same Appointment Letter on both emails
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1496,7 +1358,7 @@ cases:
   tbc: false
 - tc: CH3-18
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Negative & Regression
   scenario: No unresolved placeholders anywhere
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1516,7 +1378,7 @@ cases:
   tbc: false
 - tc: CH3-19
   run: CH3
-  btype: Sdn Bhd / Bhd
+  btype: Sole Proprietorship / Partnership
   area: Negative & Regression
   scenario: Exactly one of each email per approval (no duplicates)
   pre: CH3-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -1532,438 +1394,12 @@ cases:
   ttype: Negative
   remarks: ''
   tbc: false
-- tc: CH8-01
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Setup & Flow
-  scenario: eSim set up for CH8 — Sdn Bhd / Bhd, 4 directors, all Malaysian
-  pre: A PASS company from the checker sheet (TIN starts with C) typed in tab '1 Companies'. VPN on.
-  steps: '1. Log in to eSim: https://172.30.202.114:9089/esim/login.
-
-    2. Open tab ''CH8'' of EAINT-12341_eSim_Setup.xlsx.
-
-    3. Screen ''Ssm Enquiry Resp'': type every value of Part A, then Save.
-
-    4. Submission screen: type every value of Part B (including the tags and the people), then Save.
-
-    5. Screenshot both saved records.'
-  expected: '1. Ssm Enquiry Resp saved with Response Code 004, the ROC without its letter, the 12-digit number, Delay 0.
-
-    2. Submission record saved with Response Code 005, status ACTIVE/EXISTING and exactly 4 directors.
-
-    3. No error message on save.'
-  req: Test data (eSimulator guide)
-  prio: High
-  ttype: Setup
-  remarks: ''
-  tbc: false
-- tc: CH8-02
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Setup & Flow
-  scenario: Robot runs CH8 to Application Approved
-  pre: CH8-01 passed. VPN on. Settings file filled. Mailtrap open.
-  steps: '1. In the automation folder run: npm run ch8.
-
-    2. Tick ''I''m not a robot'' when the window asks.
-
-    3. Pay in the payment window when the window asks.
-
-    4. Do not click anything else; wait for the end of the run.
-
-    5. Copy the black-window text and keep it with the evidence.'
-  expected: '1. The Pre-Application is created, paid and approved (Pre-Application No P……/….. printed).
-
-    2. The Application is submitted and approved by the Approver (Application No NA…….. printed).
-
-    3. The window shows ''READY FOR MANUAL EMAIL CHECK'' — stopped at Application Approved.
-
-    4. An expected-email file is created in 04-runs/.'
-  req: REQ-001 (trigger)
-  prio: High
-  ttype: E2E flow (automation)
-  remarks: ''
-  tbc: false
-- tc: CH8-03
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Setup & Flow
-  scenario: Pre-Application summary shows the SSM details set up in eSim
-  pre: CH8-02 reached at least Pre-Application approved.
-  steps: '1. BackOffice > Pre-Application listing: search the Pre-Application No.
-
-    2. Check the SSM Status column.
-
-    3. Open the record and its SSM details.'
-  expected: '1. SSM Status = OK.
-
-    2. Registration no. = <ROC no. with letter> (<12-digit no.>) exactly as in tab ''1 Companies'' (letter not doubled, e.g.
-    no ''-U-A'').
-
-    3. The people listed match the eSim setup (4 directors, all Malaysian).
-
-    4. These are the values the Appointment Letter must use (old / new BRN).'
-  req: REQ-007 (letter data source)
-  prio: High
-  ttype: Data
-  remarks: ''
-  tbc: false
-- tc: CH8-04
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Negative & Regression
-  scenario: Pre-Application approval does NOT send the new emails
-  pre: CH8-02 reached at least Pre-Application approved.
-  steps: '1. Take the ''pre-app approved'' and ''approved'' (or ''submitted'') times from the run log.
-
-    2. In Mailtrap, list all emails to the run''s admin and director email addresses between those two times.'
-  expected: '1. No ''RHB Online / Branch Account Opening'' email in that window.
-
-    2. No ''Approved eAuto Registration'' email in that window.
-
-    3. The existing Pre-Application approval email (with the Application link) still arrives as before.'
-  req: REQ-001
-  prio: Medium
-  ttype: Negative
-  remarks: ''
-  tbc: false
-- tc: CH8-05
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Guideline Email (UCD)
-  scenario: Guideline email is received by the UCD — To and CC
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. In Mailtrap, search the admin email and the director email from the run log.
-
-    2. Open the email whose subject starts ''RHB Online / Branch Account Opening''.
-
-    3. Open its headers (To, CC) and note the received time.'
-  expected: '1. Exactly one such email for this Application.
-
-    2. To = the UCD email recorded in the Application — record WHICH address it is (admin or director, Q-04).
-
-    3. CC = apply@eauto.my.
-
-    4. Received after the ''approved'' time in the run log.'
-  req: REQ-001, REQ-002
-  prio: High
-  ttype: Functional
-  remarks: Sender (From) not checked — still pending Operations (Q-12).
-  tbc: false
-- tc: CH8-06
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Guideline Email (UCD)
-  scenario: Guideline email subject
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. Open the guideline email.
-
-    2. Read the subject exactly as shown.'
-  expected: '1. Subject = ''RHB Online / Branch Account Opening - <Application No> - <Company Name>''.
-
-    2. <Application No> = the NA number in the run log; <Company Name> = the run''s company name.
-
-    3. Not the old v1.1 subjects ''RHB Online Account Opening - …'' or ''RHB Branch Account Opening - …''.'
-  req: REQ-005
-  prio: High
-  ttype: Functional
-  remarks: ''
-  tbc: false
-- tc: CH8-07
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Guideline Email (UCD)
-  scenario: Guideline email body — same combined template (online + branch options)
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. Open the email body (HTML view).
-
-    2. Compare paragraph by paragraph with sheet ''Expected Templates'' → ''Email Template 1 — Body'' (or the 04-runs file).
-
-    3. Check the Text view too if Mailtrap shows one.'
-  expected: '1. Every paragraph present, in order, same wording.
-
-    2. Application No and Company Name show the run''s values.
-
-    3. Contains ''within three (3) working days'', ''Option 1 – Online Account Opening'' (with the four (4) users note and
-    seven (7) days) and ''Option 2 – Account Opening at RHB Branch''.
-
-    4. Ends with the signature block (Thank you / Best regards / eAuto Sdn Bhd / address / Customer Service / WhatsApp) —
-    Q-01.
-
-    5. Does NOT contain ''As your company meets the eligibility requirements…'' nor ''Please bring the documents provided
-    by RHB…''.'
-  req: REQ-005
-  prio: High
-  ttype: Functional
-  remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. Normal
-    Sdn Bhd case (REQ-005 Example 1).
-  tbc: false
-- tc: CH8-08
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Guideline Email (UCD)
-  scenario: Links in the guideline email
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. Hover over the link under ''Option 1 – Online Account Opening'' and note the target.
-
-    2. Hover over the Application Link near the end.'
-  expected: '1. Option 1 link target = https://smecaonline.rhbgroup.com/sme/online?tag=campaign.
-
-    2. The Application Link is a clickable URL, not the text ''[Application Link]''.'
-  req: REQ-005
-  prio: Medium
-  ttype: Functional
-  remarks: Where the Application Link must land is not in the SRD (Q-03).
-  tbc: false
-- tc: CH8-09
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Guideline Email (UCD)
-  scenario: Appointment Letter attached to the guideline email
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. Open the Attachments tab of the guideline email.
-
-    2. Note file name, type and size.
-
-    3. Download and open it.'
-  expected: '1. Exactly one attachment: the Appointment Letter.
-
-    2. It opens without error.
-
-    3. It is for THIS Application (company name and Application No match).
-
-    4. No Offer Letter, Direct Debit form or Board of Resolution attached.'
-  req: REQ-008
-  prio: High
-  ttype: Functional
-  remarks: File type and name not specified (Q-08) — record them.
-  tbc: false
-- tc: CH8-10
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Guideline Email (UCD)
-  scenario: Removed templates are not sent
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: 1. In Mailtrap, list every email to the run's addresses after the 'approved' time.
-  expected: '1. No email with subject ''RHB Branch Account Opening - …'' (old Email Template 2).
-
-    2. No email with subject ''RHB Online Account Opening - …'' without ''/ Branch'' (old Email Template 1).'
-  req: REQ-003 / REQ-004 removed, REQ-005
-  prio: Medium
-  ttype: Negative
-  remarks: ''
-  tbc: false
-- tc: CH8-11
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: RHB Support Email
-  scenario: RHB Support email — To and CC
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. In Mailtrap, search the run''s admin / director email (it is in CC of this email).
-
-    2. Open the email whose subject starts ''Approved eAuto Registration''.
-
-    3. Open its headers.'
-  expected: '1. To = BIS.Support@rhbgroup.com.
-
-    2. CC contains the UCD email recorded in the Application AND apply@eauto.my.
-
-    3. Received after the ''approved'' time.
-
-    4. The email is in Mailtrap only — nothing reached RHB (Q-17).'
-  req: REQ-006
-  prio: High
-  ttype: Functional
-  remarks: ''
-  tbc: false
-- tc: CH8-12
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: RHB Support Email
-  scenario: RHB Support email subject
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. Open the RHB Support email.
-
-    2. Read the subject.'
-  expected: '1. Subject = ''Approved eAuto Registration - <Company Name> - <BRN Number>''.
-
-    2. <Company Name> = the run''s company name.
-
-    3. <BRN Number> = the number agreed in Q-05 (SRD example shows the 12-digit new number) — record which one.'
-  req: REQ-009
-  prio: High
-  ttype: Functional
-  remarks: ''
-  tbc: false
-- tc: CH8-13
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: RHB Support Email
-  scenario: RHB Support email body — values and wording
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. Open the body.
-
-    2. Compare with sheet ''Expected Templates'' → ''Email Template 3 — Body''.
-
-    3. Compare each value line with the Application.'
-  expected: '1. Every paragraph present, in order, same wording (1 working day request, Reply All instruction, signature block).
-
-    2. Company Name / Business Registration Number / UCD Contact Person / Contact Number / Email Address show the Application''s
-    values (which contact: Q-04).
-
-    3. Does NOT contain ''The above company is not eligible for RHB''s online account-opening process…''.'
-  req: REQ-009
-  prio: High
-  ttype: Functional
-  remarks: The robot uses different name / mobile / email for Admin and Director, so this email shows which one the system
-    takes (Q-04).
-  tbc: false
-- tc: CH8-14
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: RHB Support Email
-  scenario: Appointment Letter attached to the RHB Support email
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. Open the Attachments tab.
-
-    2. Download and open the attachment.'
-  expected: '1. Exactly one attachment: the Appointment Letter for THIS Application.
-
-    2. It opens without error.'
-  req: REQ-008
-  prio: High
-  ttype: Functional
-  remarks: ''
-  tbc: false
-- tc: CH8-15
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Appointment Letter
-  scenario: Appointment Letter layout and fixed text
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. Open the letter from the guideline email.
-
-    2. Compare with sheet ''Expected Templates'' → ''Appointment Letter'' and with Sample_Appointment_Letter_v2.0.
-
-    3. Check header, body, signature and footer on every page.'
-  expected: '1. Title ''LETTER OF CONFIRMATION OF REGISTRATION AS A USED CAR DEALER (UCD) UNDER eAUTO SDN. BHD. PLATFORM''
-    (spacing: Q-10).
-
-    2. Letterhead: eAuto logo, ''eAuto Sdn Bhd 200401038456 (676967-T)'', address, ''Tel: 03-2779 8893''.
-
-    3. Clauses 1–8 numbered, wording as the template; Clause 6 refers to ''Clause 5''.
-
-    4. Registration details table (UCD Name / Company Registration No. / UCD / Dealer Reference No.).
-
-    5. Signature image, ''CHIA KET MING'', ''COO''; footer ''Website: www.eauto.my | Customer Service: 03-2779 8899 | Email:
-    support@eauto.my''.
-
-    6. No layout break (cut text, overlap, blank page).'
-  req: REQ-007
-  prio: Medium
-  ttype: Functional
-  remarks: ''
-  tbc: false
-- tc: CH8-16
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Appointment Letter
-  scenario: Appointment Letter pre-filled values
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md. SSM details from CH8-03.
-  steps: '1. Open the letter.
-
-    2. Compare each value with its source (run log, Application, Pre-Application SSM details).'
-  expected: '1. Date = Application approval date, DD/MM/YYYY.
-
-    2. Our Ref = eAuto/OPS/UCD/<Application No>/<approval year> (square brackets: Q-07).
-
-    3. UCD Company Name = the Application''s company name (recipient block, Clause 1, Clause 4).
-
-    4. Company Registration No. = <ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307) — identical in recipient
-    block, Clause 1 and Clause 4.
-
-    5. Company Address = the Application''s company address (which field: Q-06).
-
-    6. UCD / Dealer Reference No. = ''<Pre-Application No> / <Application No>''.'
-  req: REQ-007
-  prio: High
-  ttype: Functional
-  remarks: ''
-  tbc: false
-- tc: CH8-17
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Appointment Letter
-  scenario: Same Appointment Letter on both emails
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. Download the attachment of the guideline email and of the RHB Support email.
-
-    2. Compare them.'
-  expected: '1. Same file name and size.
-
-    2. Same Our Ref, date, company, registration number and reference numbers.'
-  req: REQ-008
-  prio: Medium
-  ttype: Functional
-  remarks: ''
-  tbc: false
-- tc: CH8-18
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Negative & Regression
-  scenario: No unresolved placeholders anywhere
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. In both emails, search the subject and body for ''['' and '']''.
-
-    2. In the letter, search for ''['' and '']''.'
-  expected: '1. None of these appear literally: [Application No], [Company Name], [BRN Number], [Name], [Contact Number],
-    [UCD Email Address], [RHB Online Registration Link], [Application Link], [DD/MM/YYYY], [YYYY], [UCD Company Name], [Old
-    BRN], [New BRN], [Company Address], [Pre-Application No].
-
-    2. No empty value (e.g. ''Company Name: '' with nothing after it).'
-  req: REQ-005, REQ-007, REQ-009
-  prio: High
-  ttype: Negative
-  remarks: Brackets kept around a filled value in the letter are Q-07, not a failure here.
-  tbc: false
-- tc: CH8-19
-  run: CH8
-  btype: Sdn Bhd / Bhd
-  area: Negative & Regression
-  scenario: Exactly one of each email per approval (no duplicates)
-  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH8_<run>.md.
-  steps: '1. Wait 10 minutes after the ''approved'' time (Q-16).
-
-    2. In Mailtrap, count the emails for this Application by subject.'
-  expected: '1. Exactly 1 × ''RHB Online / Branch Account Opening - …''.
-
-    2. Exactly 1 × ''Approved eAuto Registration - …''.'
-  req: REQ-001
-  prio: Medium
-  ttype: Negative
-  remarks: ''
-  tbc: false
 - tc: CH4-01
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Setup & Flow
-  scenario: eSim set up for CH4 — LLP, 4 partners, all Malaysian
-  pre: A PASS company from the checker sheet (TIN starts with PT) typed in tab '1 Companies'. VPN on.
+  scenario: eSim set up for CH4 — Sole Proprietorship / Partnership, 5 business owners, all Malaysian
+  pre: A PASS company from the checker sheet (TIN starts with D) typed in tab '1 Companies'. VPN on.
   steps: '1. Log in to eSim: https://172.30.202.114:9089/esim/login.
 
     2. Open tab ''CH4'' of EAINT-12341_eSim_Setup.xlsx.
@@ -1975,7 +1411,7 @@ cases:
     5. Screenshot both saved records.'
   expected: '1. Ssm Enquiry Resp saved with Response Code 004, the ROC without its letter, the 12-digit number, Delay 0.
 
-    2. Submission record saved with Response Code 005, status ACTIVE/EXISTING and exactly 4 partners.
+    2. Submission record saved with Response Code 005, status ACTIVE/EXISTING and exactly 5 business owners.
 
     3. No error message on save.'
   req: Test data (eSimulator guide)
@@ -1985,7 +1421,7 @@ cases:
   tbc: false
 - tc: CH4-02
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Setup & Flow
   scenario: Robot runs CH4 to Application Approved
   pre: CH4-01 passed. VPN on. Settings file filled. Mailtrap open.
@@ -2012,7 +1448,7 @@ cases:
   tbc: false
 - tc: CH4-03
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Setup & Flow
   scenario: Pre-Application summary shows the SSM details set up in eSim
   pre: CH4-02 reached at least Pre-Application approved.
@@ -2023,10 +1459,10 @@ cases:
     3. Open the record and its SSM details.'
   expected: '1. SSM Status = OK.
 
-    2. Registration no. = <LLP no. incl. -LGN> (<12-digit no.>) exactly as in tab ''1 Companies'' (letter not doubled, e.g.
+    2. Registration no. = <ROB no. with letter> (<12-digit no.>) exactly as in tab ''1 Companies'' (letter not doubled, e.g.
     no ''-U-A'').
 
-    3. The people listed match the eSim setup (4 partners, all Malaysian).
+    3. The people listed match the eSim setup (5 business owners, all Malaysian).
 
     4. These are the values the Appointment Letter must use (old / new BRN).'
   req: REQ-007 (letter data source)
@@ -2036,7 +1472,7 @@ cases:
   tbc: false
 - tc: CH4-04
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Negative & Regression
   scenario: Pre-Application approval does NOT send the new emails
   pre: CH4-02 reached at least Pre-Application approved.
@@ -2055,7 +1491,7 @@ cases:
   tbc: false
 - tc: CH4-05
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Guideline email is received by the UCD — To and CC
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2079,7 +1515,7 @@ cases:
   tbc: false
 - tc: CH4-06
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Guideline email subject
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2099,7 +1535,7 @@ cases:
   tbc: false
 - tc: CH4-07
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Guideline email body — same combined template (online + branch options)
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2124,12 +1560,12 @@ cases:
   req: REQ-005
   prio: High
   ttype: Functional
-  remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. LLP is
-    not in the eSimulator guide — confirm the eSim screen first.
+  remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. REQ-005
+    Example 2 (5 or more owners) — must get the SAME email as CH1.
   tbc: false
 - tc: CH4-08
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Links in the guideline email
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2147,7 +1583,7 @@ cases:
   tbc: false
 - tc: CH4-09
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Appointment Letter attached to the guideline email
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2171,7 +1607,7 @@ cases:
   tbc: false
 - tc: CH4-10
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Guideline Email (UCD)
   scenario: Removed templates are not sent
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2187,7 +1623,7 @@ cases:
   tbc: false
 - tc: CH4-11
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: RHB Support Email
   scenario: RHB Support email — To and CC
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2211,7 +1647,7 @@ cases:
   tbc: false
 - tc: CH4-12
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: RHB Support Email
   scenario: RHB Support email subject
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2231,7 +1667,7 @@ cases:
   tbc: false
 - tc: CH4-13
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: RHB Support Email
   scenario: RHB Support email body — values and wording
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2255,7 +1691,7 @@ cases:
   tbc: false
 - tc: CH4-14
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: RHB Support Email
   scenario: Appointment Letter attached to the RHB Support email
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2273,7 +1709,7 @@ cases:
   tbc: false
 - tc: CH4-15
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Appointment Letter
   scenario: Appointment Letter layout and fixed text
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2303,7 +1739,7 @@ cases:
   tbc: false
 - tc: CH4-16
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Appointment Letter
   scenario: Appointment Letter pre-filled values
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2317,8 +1753,8 @@ cases:
 
     3. UCD Company Name = the Application''s company name (recipient block, Clause 1, Clause 4).
 
-    4. Company Registration No. = <LLP no. incl. -LGN> (<12-digit no.>), e.g. LLP0035174-LGN (202304001238) — identical in
-    recipient block, Clause 1 and Clause 4.
+    4. Company Registration No. = <ROB no. with letter> (<12-digit no.>), e.g. 003123456-X (202103123456) — identical in recipient
+    block, Clause 1 and Clause 4.
 
     5. Company Address = the Application''s company address (which field: Q-06).
 
@@ -2330,7 +1766,7 @@ cases:
   tbc: false
 - tc: CH4-17
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Appointment Letter
   scenario: Same Appointment Letter on both emails
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2348,7 +1784,7 @@ cases:
   tbc: false
 - tc: CH4-18
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Negative & Regression
   scenario: No unresolved placeholders anywhere
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2368,7 +1804,7 @@ cases:
   tbc: false
 - tc: CH4-19
   run: CH4
-  btype: LLP
+  btype: Sole Proprietorship / Partnership
   area: Negative & Regression
   scenario: Exactly one of each email per approval (no duplicates)
   pre: CH4-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2386,30 +1822,174 @@ cases:
   tbc: false
 - tc: CH5-01
   run: CH5
-  btype: Business Trading (Sabah)
+  btype: Sole Proprietorship / Partnership
   area: Setup & Flow
-  scenario: Test data ready for CH5 — Business Trading (Sabah) (no eSim)
-  pre: Tab '1 Companies' of EAINT-12341_eSim_Setup.xlsx open.
-  steps: '1. In tab ''1 Companies'', find the row for CH5.
+  scenario: eSim set up for CH5 — Sole Proprietorship / Partnership, 4 business owners, all Malaysian
+  pre: A PASS company from the checker sheet (TIN starts with D (or IG)) typed in tab '1 Companies'. VPN on.
+  steps: '1. Log in to eSim: https://172.30.202.114:9089/esim/login.
 
-    2. Type the TIN to use in the TIN cell (Q-20).
+    2. Open tab ''CH5'' of EAINT-12341_eSim_Setup.xlsx.
 
-    3. Save and close the Excel.'
-  expected: '1. The TIN cell of the row is filled.
+    3. Screen ''Ssm Enquiry Resp'': type every value of Part A, then Save.
 
-    2. The Excel is saved and closed (the robot reads it).'
-  req: Test data
+    4. Submission screen: type every value of Part B (including the tags and the people), then Save.
+
+    5. Screenshot both saved records.'
+  expected: '1. Ssm Enquiry Resp saved with Response Code 004, the ROC without its letter, the 12-digit number, Delay 0.
+
+    2. Submission record saved with Response Code 005, status ACTIVE/EXISTING and exactly 4 business owners.
+
+    3. No error message on save.'
+  req: Test data (eSimulator guide)
   prio: High
   ttype: Setup
   remarks: ''
   tbc: false
 - tc: CH5-02
   run: CH5
-  btype: Business Trading (Sabah)
+  btype: Sole Proprietorship / Partnership
   area: Setup & Flow
-  scenario: Robot runs CH5 to Application Approved
+  scenario: Robot runs CH5 to Application Submitted
   pre: CH5-01 passed. VPN on. Settings file filled. Mailtrap open.
   steps: '1. In the automation folder run: npm run ch5.
+
+    2. Tick ''I''m not a robot'' when the window asks.
+
+    3. Pay in the payment window when the window asks.
+
+    4. Do not click anything else; wait for the end of the run.
+
+    5. Copy the black-window text and keep it with the evidence.'
+  expected: '1. The Pre-Application is created, paid and approved (Pre-Application No P……/….. printed).
+
+    2. The Application is submitted (the run stops here by design).
+
+    3. The window shows ''READY FOR MANUAL EMAIL CHECK'' — stopped at Application Submitted.
+
+    4. An expected-email file is created in 04-runs/.'
+  req: REQ-001 (trigger)
+  prio: High
+  ttype: E2E flow (automation)
+  remarks: ''
+  tbc: false
+- tc: CH5-03
+  run: CH5
+  btype: Sole Proprietorship / Partnership
+  area: Setup & Flow
+  scenario: Pre-Application summary shows the SSM details set up in eSim
+  pre: CH5-02 reached at least Pre-Application approved.
+  steps: '1. BackOffice > Pre-Application listing: search the Pre-Application No.
+
+    2. Check the SSM Status column.
+
+    3. Open the record and its SSM details.'
+  expected: '1. SSM Status = OK.
+
+    2. Registration no. =  exactly as in tab ''1 Companies'' (letter not doubled, e.g. no ''-U-A'').
+
+    3. The people listed match the eSim setup (4 business owners, all Malaysian).
+
+    4. These are the values the Appointment Letter must use (old / new BRN).'
+  req: REQ-007 (letter data source)
+  prio: High
+  ttype: Data
+  remarks: ''
+  tbc: false
+- tc: CH5-04
+  run: CH5
+  btype: Sole Proprietorship / Partnership
+  area: Negative & Regression
+  scenario: Pre-Application approval does NOT send the new emails
+  pre: CH5-02 reached at least Pre-Application approved.
+  steps: '1. Take the ''pre-app approved'' and ''approved'' (or ''submitted'') times from the run log.
+
+    2. In Mailtrap, list all emails to the run''s admin and director email addresses between those two times.'
+  expected: '1. No ''RHB Online / Branch Account Opening'' email in that window.
+
+    2. No ''Approved eAuto Registration'' email in that window.
+
+    3. The existing Pre-Application approval email (with the Application link) still arrives as before.'
+  req: REQ-001
+  prio: Medium
+  ttype: Negative
+  remarks: ''
+  tbc: false
+- tc: CH5-05
+  run: CH5
+  btype: Sole Proprietorship / Partnership
+  area: Negative & Regression
+  scenario: No new email while the Application is at Submitted
+  pre: CH5-02 passed (Application Submitted).
+  steps: '1. Note the ''submitted'' time from the run log.
+
+    2. Wait 10 minutes (quiet window, Q-16).
+
+    3. In Mailtrap, list emails to the run''s admin and director addresses after that time.'
+  expected: '1. No ''RHB Online / Branch Account Opening'' email.
+
+    2. No ''Approved eAuto Registration'' email.'
+  req: REQ-001
+  prio: High
+  ttype: Negative
+  remarks: ''
+  tbc: false
+- tc: CH5-06
+  run: CH5
+  btype: Sole Proprietorship / Partnership
+  area: Negative & Regression
+  scenario: No new email after Revert to UCD
+  pre: CH5-03 passed.
+  steps: '1. BackOffice > Application listing: open the run''s Application.
+
+    2. Revert it to UCD (role / button per Q-15). Note the time.
+
+    3. Wait 10 minutes.
+
+    4. In Mailtrap, list emails to the run''s addresses after the revert.'
+  expected: '1. The Application status changes to the reverted status as before.
+
+    2. No ''RHB Online / Branch Account Opening'' email.
+
+    3. No ''Approved eAuto Registration'' email.
+
+    4. Any existing revert notification is unchanged.'
+  req: REQ-001
+  prio: High
+  ttype: Negative
+  remarks: ''
+  tbc: false
+- tc: CH6-01
+  run: CH6
+  btype: LLP
+  area: Setup & Flow
+  scenario: eSim set up for CH6 — LLP, 4 partners, all Malaysian
+  pre: A PASS company from the checker sheet (TIN starts with PT) typed in tab '1 Companies'. VPN on.
+  steps: '1. Log in to eSim: https://172.30.202.114:9089/esim/login.
+
+    2. Open tab ''CH6'' of EAINT-12341_eSim_Setup.xlsx.
+
+    3. Screen ''Ssm Enquiry Resp'': type every value of Part A, then Save.
+
+    4. Submission screen: type every value of Part B (including the tags and the people), then Save.
+
+    5. Screenshot both saved records.'
+  expected: '1. Ssm Enquiry Resp saved with Response Code 004, the ROC without its letter, the 12-digit number, Delay 0.
+
+    2. Submission record saved with Response Code 005, status ACTIVE/EXISTING and exactly 4 partners.
+
+    3. No error message on save.'
+  req: Test data (eSimulator guide)
+  prio: High
+  ttype: Setup
+  remarks: ''
+  tbc: false
+- tc: CH6-02
+  run: CH6
+  btype: LLP
+  area: Setup & Flow
+  scenario: Robot runs CH6 to Application Approved
+  pre: CH6-01 passed. VPN on. Settings file filled. Mailtrap open.
+  steps: '1. In the automation folder run: npm run ch6.
 
     2. Tick ''I''m not a robot'' when the window asks.
 
@@ -2430,31 +2010,36 @@ cases:
   ttype: E2E flow (automation)
   remarks: ''
   tbc: false
-- tc: CH5-03
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-03
+  run: CH6
+  btype: LLP
   area: Setup & Flow
-  scenario: Pre-Application record shows the Business Trading details
-  pre: CH5-02 reached at least Pre-Application approved.
+  scenario: Pre-Application summary shows the SSM details set up in eSim
+  pre: CH6-02 reached at least Pre-Application approved.
   steps: '1. BackOffice > Pre-Application listing: search the Pre-Application No.
 
-    2. Open the record.'
-  expected: '1. Business type = Business Trading (Sabah).
+    2. Check the SSM Status column.
 
-    2. The licence number the robot typed is shown.
+    3. Open the record and its SSM details.'
+  expected: '1. SSM Status = OK.
 
-    3. Company name = the run''s company name.'
-  req: Regression (existing behaviour)
-  prio: Medium
-  ttype: Regression
+    2. Registration no. = <LLP no. incl. -LGN> (<12-digit no.>) exactly as in tab ''1 Companies'' (letter not doubled, e.g.
+    no ''-U-A'').
+
+    3. The people listed match the eSim setup (4 partners, all Malaysian).
+
+    4. These are the values the Appointment Letter must use (old / new BRN).'
+  req: REQ-007 (letter data source)
+  prio: High
+  ttype: Data
   remarks: ''
   tbc: false
-- tc: CH5-04
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-04
+  run: CH6
+  btype: LLP
   area: Negative & Regression
   scenario: Pre-Application approval does NOT send the new emails
-  pre: CH5-02 reached at least Pre-Application approved.
+  pre: CH6-02 reached at least Pre-Application approved.
   steps: '1. Take the ''pre-app approved'' and ''approved'' (or ''submitted'') times from the run log.
 
     2. In Mailtrap, list all emails to the run''s admin and director email addresses between those two times.'
@@ -2468,13 +2053,13 @@ cases:
   ttype: Negative
   remarks: ''
   tbc: false
-- tc: CH5-05
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-05
+  run: CH6
+  btype: LLP
   area: Guideline Email (UCD)
   scenario: Guideline email is received by the UCD — To and CC
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. In Mailtrap, search the admin email and the director email from the run log.
 
     2. Open the email whose subject starts ''RHB Online / Branch Account Opening''.
@@ -2492,13 +2077,13 @@ cases:
   ttype: Functional
   remarks: Sender (From) not checked — still pending Operations (Q-12).
   tbc: false
-- tc: CH5-06
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-06
+  run: CH6
+  btype: LLP
   area: Guideline Email (UCD)
   scenario: Guideline email subject
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. Open the guideline email.
 
     2. Read the subject exactly as shown.'
@@ -2512,13 +2097,13 @@ cases:
   ttype: Functional
   remarks: ''
   tbc: false
-- tc: CH5-07
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-07
+  run: CH6
+  btype: LLP
   area: Guideline Email (UCD)
   scenario: Guideline email body — same combined template (online + branch options)
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. Open the email body (HTML view).
 
     2. Compare paragraph by paragraph with sheet ''Expected Templates'' → ''Email Template 1 — Body'' (or the 04-runs file).
@@ -2539,16 +2124,16 @@ cases:
   req: REQ-005
   prio: High
   ttype: Functional
-  remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. Non-SSM.
-    No eSim. Letter registration number expected result is TBC (red).
+  remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. LLP is
+    not in the eSimulator guide — confirm the eSim screen first.
   tbc: false
-- tc: CH5-08
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-08
+  run: CH6
+  btype: LLP
   area: Guideline Email (UCD)
   scenario: Links in the guideline email
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. Hover over the link under ''Option 1 – Online Account Opening'' and note the target.
 
     2. Hover over the Application Link near the end.'
@@ -2560,13 +2145,13 @@ cases:
   ttype: Functional
   remarks: Where the Application Link must land is not in the SRD (Q-03).
   tbc: false
-- tc: CH5-09
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-09
+  run: CH6
+  btype: LLP
   area: Guideline Email (UCD)
   scenario: Appointment Letter attached to the guideline email
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. Open the Attachments tab of the guideline email.
 
     2. Note file name, type and size.
@@ -2584,13 +2169,13 @@ cases:
   ttype: Functional
   remarks: File type and name not specified (Q-08) — record them.
   tbc: false
-- tc: CH5-10
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-10
+  run: CH6
+  btype: LLP
   area: Guideline Email (UCD)
   scenario: Removed templates are not sent
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: 1. In Mailtrap, list every email to the run's addresses after the 'approved' time.
   expected: '1. No email with subject ''RHB Branch Account Opening - …'' (old Email Template 2).
 
@@ -2600,13 +2185,13 @@ cases:
   ttype: Negative
   remarks: ''
   tbc: false
-- tc: CH5-11
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-11
+  run: CH6
+  btype: LLP
   area: RHB Support Email
   scenario: RHB Support email — To and CC
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. In Mailtrap, search the run''s admin / director email (it is in CC of this email).
 
     2. Open the email whose subject starts ''Approved eAuto Registration''.
@@ -2624,13 +2209,13 @@ cases:
   ttype: Functional
   remarks: ''
   tbc: false
-- tc: CH5-12
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-12
+  run: CH6
+  btype: LLP
   area: RHB Support Email
   scenario: RHB Support email subject
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. Open the RHB Support email.
 
     2. Read the subject.'
@@ -2642,15 +2227,15 @@ cases:
   req: REQ-009
   prio: High
   ttype: Functional
-  remarks: 'Business Trading: what replaces the BRN is TBC (Q-05 / Q-09).'
-  tbc: true
-- tc: CH5-13
-  run: CH5
-  btype: Business Trading (Sabah)
+  remarks: ''
+  tbc: false
+- tc: CH6-13
+  run: CH6
+  btype: LLP
   area: RHB Support Email
   scenario: RHB Support email body — values and wording
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. Open the body.
 
     2. Compare with sheet ''Expected Templates'' → ''Email Template 3 — Body''.
@@ -2668,13 +2253,13 @@ cases:
   remarks: The robot uses different name / mobile / email for Admin and Director, so this email shows which one the system
     takes (Q-04).
   tbc: false
-- tc: CH5-14
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-14
+  run: CH6
+  btype: LLP
   area: RHB Support Email
   scenario: Appointment Letter attached to the RHB Support email
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. Open the Attachments tab.
 
     2. Download and open the attachment.'
@@ -2686,13 +2271,13 @@ cases:
   ttype: Functional
   remarks: ''
   tbc: false
-- tc: CH5-15
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-15
+  run: CH6
+  btype: LLP
   area: Appointment Letter
   scenario: Appointment Letter layout and fixed text
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. Open the letter from the guideline email.
 
     2. Compare with sheet ''Expected Templates'' → ''Appointment Letter'' and with Sample_Appointment_Letter_v2.0.
@@ -2716,13 +2301,13 @@ cases:
   ttype: Functional
   remarks: ''
   tbc: false
-- tc: CH5-16
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-16
+  run: CH6
+  btype: LLP
   area: Appointment Letter
   scenario: Appointment Letter pre-filled values
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md. SSM details from CH5-03.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md. SSM details from CH6-03.
   steps: '1. Open the letter.
 
     2. Compare each value with its source (run log, Application, Pre-Application SSM details).'
@@ -2732,8 +2317,8 @@ cases:
 
     3. UCD Company Name = the Application''s company name (recipient block, Clause 1, Clause 4).
 
-    4. Company Registration No. = TBC — no SSM details for Business Trading (Q-09) — identical in recipient block, Clause
-    1 and Clause 4.
+    4. Company Registration No. = <LLP no. incl. -LGN> (<12-digit no.>), e.g. LLP0035174-LGN (202304001238) — identical in
+    recipient block, Clause 1 and Clause 4.
 
     5. Company Address = the Application''s company address (which field: Q-06).
 
@@ -2741,15 +2326,15 @@ cases:
   req: REQ-007
   prio: High
   ttype: Functional
-  remarks: 'RED: registration number for Business Trading is TBC (Q-09).'
-  tbc: true
-- tc: CH5-17
-  run: CH5
-  btype: Business Trading (Sabah)
+  remarks: ''
+  tbc: false
+- tc: CH6-17
+  run: CH6
+  btype: LLP
   area: Appointment Letter
   scenario: Same Appointment Letter on both emails
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. Download the attachment of the guideline email and of the RHB Support email.
 
     2. Compare them.'
@@ -2761,13 +2346,13 @@ cases:
   ttype: Functional
   remarks: ''
   tbc: false
-- tc: CH5-18
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-18
+  run: CH6
+  btype: LLP
   area: Negative & Regression
   scenario: No unresolved placeholders anywhere
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. In both emails, search the subject and body for ''['' and '']''.
 
     2. In the letter, search for ''['' and '']''.'
@@ -2781,13 +2366,13 @@ cases:
   ttype: Negative
   remarks: Brackets kept around a filled value in the letter are Q-07, not a failure here.
   tbc: false
-- tc: CH5-19
-  run: CH5
-  btype: Business Trading (Sabah)
+- tc: CH6-19
+  run: CH6
+  btype: LLP
   area: Negative & Regression
   scenario: Exactly one of each email per approval (no duplicates)
-  pre: CH5-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
-    the expected-email file 04-runs/12341_CH5_<run>.md.
+  pre: CH6-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH6_<run>.md.
   steps: '1. Wait 10 minutes after the ''approved'' time (Q-16).
 
     2. In Mailtrap, count the emails for this Application by subject.'
@@ -2801,9 +2386,9 @@ cases:
   tbc: false
 - tc: CH7-01
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Setup & Flow
-  scenario: Test data ready for CH7 — Business Trading (Sarawak) (no eSim)
+  scenario: Test data ready for CH7 — Business Trading (Sabah) (no eSim)
   pre: Tab '1 Companies' of EAINT-12341_eSim_Setup.xlsx open.
   steps: '1. In tab ''1 Companies'', find the row for CH7.
 
@@ -2820,7 +2405,7 @@ cases:
   tbc: false
 - tc: CH7-02
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Setup & Flow
   scenario: Robot runs CH7 to Application Approved
   pre: CH7-01 passed. VPN on. Settings file filled. Mailtrap open.
@@ -2847,14 +2432,14 @@ cases:
   tbc: false
 - tc: CH7-03
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Setup & Flow
   scenario: Pre-Application record shows the Business Trading details
   pre: CH7-02 reached at least Pre-Application approved.
   steps: '1. BackOffice > Pre-Application listing: search the Pre-Application No.
 
     2. Open the record.'
-  expected: '1. Business type = Business Trading (Sarawak).
+  expected: '1. Business type = Business Trading (Sabah).
 
     2. The licence number the robot typed is shown.
 
@@ -2866,7 +2451,7 @@ cases:
   tbc: false
 - tc: CH7-04
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Negative & Regression
   scenario: Pre-Application approval does NOT send the new emails
   pre: CH7-02 reached at least Pre-Application approved.
@@ -2885,7 +2470,7 @@ cases:
   tbc: false
 - tc: CH7-05
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Guideline Email (UCD)
   scenario: Guideline email is received by the UCD — To and CC
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2909,7 +2494,7 @@ cases:
   tbc: false
 - tc: CH7-06
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Guideline Email (UCD)
   scenario: Guideline email subject
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2929,7 +2514,7 @@ cases:
   tbc: false
 - tc: CH7-07
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Guideline Email (UCD)
   scenario: Guideline email body — same combined template (online + branch options)
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2954,12 +2539,12 @@ cases:
   req: REQ-005
   prio: High
   ttype: Functional
-  remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. Non-SSM,
-    Sarawak. No eSim. Letter registration number expected result is TBC (red).
+  remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. Non-SSM.
+    No eSim. Letter registration number expected result is TBC (red).
   tbc: false
 - tc: CH7-08
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Guideline Email (UCD)
   scenario: Links in the guideline email
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -2977,7 +2562,7 @@ cases:
   tbc: false
 - tc: CH7-09
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Guideline Email (UCD)
   scenario: Appointment Letter attached to the guideline email
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -3001,7 +2586,7 @@ cases:
   tbc: false
 - tc: CH7-10
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Guideline Email (UCD)
   scenario: Removed templates are not sent
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -3017,7 +2602,7 @@ cases:
   tbc: false
 - tc: CH7-11
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: RHB Support Email
   scenario: RHB Support email — To and CC
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -3041,7 +2626,7 @@ cases:
   tbc: false
 - tc: CH7-12
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: RHB Support Email
   scenario: RHB Support email subject
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -3061,7 +2646,7 @@ cases:
   tbc: true
 - tc: CH7-13
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: RHB Support Email
   scenario: RHB Support email body — values and wording
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -3085,7 +2670,7 @@ cases:
   tbc: false
 - tc: CH7-14
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: RHB Support Email
   scenario: Appointment Letter attached to the RHB Support email
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -3103,7 +2688,7 @@ cases:
   tbc: false
 - tc: CH7-15
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Appointment Letter
   scenario: Appointment Letter layout and fixed text
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -3133,7 +2718,7 @@ cases:
   tbc: false
 - tc: CH7-16
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Appointment Letter
   scenario: Appointment Letter pre-filled values
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -3160,7 +2745,7 @@ cases:
   tbc: true
 - tc: CH7-17
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Appointment Letter
   scenario: Same Appointment Letter on both emails
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -3178,7 +2763,7 @@ cases:
   tbc: false
 - tc: CH7-18
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Negative & Regression
   scenario: No unresolved placeholders anywhere
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
@@ -3198,11 +2783,426 @@ cases:
   tbc: false
 - tc: CH7-19
   run: CH7
-  btype: Business Trading (Sarawak)
+  btype: Business Trading (Sabah)
   area: Negative & Regression
   scenario: Exactly one of each email per approval (no duplicates)
   pre: CH7-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
     the expected-email file 04-runs/12341_CH7_<run>.md.
+  steps: '1. Wait 10 minutes after the ''approved'' time (Q-16).
+
+    2. In Mailtrap, count the emails for this Application by subject.'
+  expected: '1. Exactly 1 × ''RHB Online / Branch Account Opening - …''.
+
+    2. Exactly 1 × ''Approved eAuto Registration - …''.'
+  req: REQ-001
+  prio: Medium
+  ttype: Negative
+  remarks: ''
+  tbc: false
+- tc: CH8-01
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Setup & Flow
+  scenario: Test data ready for CH8 — Business Trading (Sarawak) (no eSim)
+  pre: Tab '1 Companies' of EAINT-12341_eSim_Setup.xlsx open.
+  steps: '1. In tab ''1 Companies'', find the row for CH8.
+
+    2. Type the TIN to use in the TIN cell (Q-20).
+
+    3. Save and close the Excel.'
+  expected: '1. The TIN cell of the row is filled.
+
+    2. The Excel is saved and closed (the robot reads it).'
+  req: Test data
+  prio: High
+  ttype: Setup
+  remarks: ''
+  tbc: false
+- tc: CH8-02
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Setup & Flow
+  scenario: Robot runs CH8 to Application Approved
+  pre: CH8-01 passed. VPN on. Settings file filled. Mailtrap open.
+  steps: '1. In the automation folder run: npm run ch8.
+
+    2. Tick ''I''m not a robot'' when the window asks.
+
+    3. Pay in the payment window when the window asks.
+
+    4. Do not click anything else; wait for the end of the run.
+
+    5. Copy the black-window text and keep it with the evidence.'
+  expected: '1. The Pre-Application is created, paid and approved (Pre-Application No P……/….. printed).
+
+    2. The Application is submitted and approved by the Approver (Application No NA…….. printed).
+
+    3. The window shows ''READY FOR MANUAL EMAIL CHECK'' — stopped at Application Approved.
+
+    4. An expected-email file is created in 04-runs/.'
+  req: REQ-001 (trigger)
+  prio: High
+  ttype: E2E flow (automation)
+  remarks: ''
+  tbc: false
+- tc: CH8-03
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Setup & Flow
+  scenario: Pre-Application record shows the Business Trading details
+  pre: CH8-02 reached at least Pre-Application approved.
+  steps: '1. BackOffice > Pre-Application listing: search the Pre-Application No.
+
+    2. Open the record.'
+  expected: '1. Business type = Business Trading (Sarawak).
+
+    2. The licence number the robot typed is shown.
+
+    3. Company name = the run''s company name.'
+  req: Regression (existing behaviour)
+  prio: Medium
+  ttype: Regression
+  remarks: ''
+  tbc: false
+- tc: CH8-04
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Negative & Regression
+  scenario: Pre-Application approval does NOT send the new emails
+  pre: CH8-02 reached at least Pre-Application approved.
+  steps: '1. Take the ''pre-app approved'' and ''approved'' (or ''submitted'') times from the run log.
+
+    2. In Mailtrap, list all emails to the run''s admin and director email addresses between those two times.'
+  expected: '1. No ''RHB Online / Branch Account Opening'' email in that window.
+
+    2. No ''Approved eAuto Registration'' email in that window.
+
+    3. The existing Pre-Application approval email (with the Application link) still arrives as before.'
+  req: REQ-001
+  prio: Medium
+  ttype: Negative
+  remarks: ''
+  tbc: false
+- tc: CH8-05
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Guideline Email (UCD)
+  scenario: Guideline email is received by the UCD — To and CC
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. In Mailtrap, search the admin email and the director email from the run log.
+
+    2. Open the email whose subject starts ''RHB Online / Branch Account Opening''.
+
+    3. Open its headers (To, CC) and note the received time.'
+  expected: '1. Exactly one such email for this Application.
+
+    2. To = the UCD email recorded in the Application — record WHICH address it is (admin or director, Q-04).
+
+    3. CC = apply@eauto.my.
+
+    4. Received after the ''approved'' time in the run log.'
+  req: REQ-001, REQ-002
+  prio: High
+  ttype: Functional
+  remarks: Sender (From) not checked — still pending Operations (Q-12).
+  tbc: false
+- tc: CH8-06
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Guideline Email (UCD)
+  scenario: Guideline email subject
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. Open the guideline email.
+
+    2. Read the subject exactly as shown.'
+  expected: '1. Subject = ''RHB Online / Branch Account Opening - <Application No> - <Company Name>''.
+
+    2. <Application No> = the NA number in the run log; <Company Name> = the run''s company name.
+
+    3. Not the old v1.1 subjects ''RHB Online Account Opening - …'' or ''RHB Branch Account Opening - …''.'
+  req: REQ-005
+  prio: High
+  ttype: Functional
+  remarks: ''
+  tbc: false
+- tc: CH8-07
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Guideline Email (UCD)
+  scenario: Guideline email body — same combined template (online + branch options)
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. Open the email body (HTML view).
+
+    2. Compare paragraph by paragraph with sheet ''Expected Templates'' → ''Email Template 1 — Body'' (or the 04-runs file).
+
+    3. Check the Text view too if Mailtrap shows one.'
+  expected: '1. Every paragraph present, in order, same wording.
+
+    2. Application No and Company Name show the run''s values.
+
+    3. Contains ''within three (3) working days'', ''Option 1 – Online Account Opening'' (with the four (4) users note and
+    seven (7) days) and ''Option 2 – Account Opening at RHB Branch''.
+
+    4. Ends with the signature block (Thank you / Best regards / eAuto Sdn Bhd / address / Customer Service / WhatsApp) —
+    Q-01.
+
+    5. Does NOT contain ''As your company meets the eligibility requirements…'' nor ''Please bring the documents provided
+    by RHB…''.'
+  req: REQ-005
+  prio: High
+  ttype: Functional
+  remarks: Same expected text for every business type — REQ-005 Example 1 and Example 2 both send Email Template 1. Non-SSM,
+    Sarawak. No eSim. Letter registration number expected result is TBC (red).
+  tbc: false
+- tc: CH8-08
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Guideline Email (UCD)
+  scenario: Links in the guideline email
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. Hover over the link under ''Option 1 – Online Account Opening'' and note the target.
+
+    2. Hover over the Application Link near the end.'
+  expected: '1. Option 1 link target = https://smecaonline.rhbgroup.com/sme/online?tag=campaign.
+
+    2. The Application Link is a clickable URL, not the text ''[Application Link]''.'
+  req: REQ-005
+  prio: Medium
+  ttype: Functional
+  remarks: Where the Application Link must land is not in the SRD (Q-03).
+  tbc: false
+- tc: CH8-09
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Guideline Email (UCD)
+  scenario: Appointment Letter attached to the guideline email
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. Open the Attachments tab of the guideline email.
+
+    2. Note file name, type and size.
+
+    3. Download and open it.'
+  expected: '1. Exactly one attachment: the Appointment Letter.
+
+    2. It opens without error.
+
+    3. It is for THIS Application (company name and Application No match).
+
+    4. No Offer Letter, Direct Debit form or Board of Resolution attached.'
+  req: REQ-008
+  prio: High
+  ttype: Functional
+  remarks: File type and name not specified (Q-08) — record them.
+  tbc: false
+- tc: CH8-10
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Guideline Email (UCD)
+  scenario: Removed templates are not sent
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: 1. In Mailtrap, list every email to the run's addresses after the 'approved' time.
+  expected: '1. No email with subject ''RHB Branch Account Opening - …'' (old Email Template 2).
+
+    2. No email with subject ''RHB Online Account Opening - …'' without ''/ Branch'' (old Email Template 1).'
+  req: REQ-003 / REQ-004 removed, REQ-005
+  prio: Medium
+  ttype: Negative
+  remarks: ''
+  tbc: false
+- tc: CH8-11
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: RHB Support Email
+  scenario: RHB Support email — To and CC
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. In Mailtrap, search the run''s admin / director email (it is in CC of this email).
+
+    2. Open the email whose subject starts ''Approved eAuto Registration''.
+
+    3. Open its headers.'
+  expected: '1. To = BIS.Support@rhbgroup.com.
+
+    2. CC contains the UCD email recorded in the Application AND apply@eauto.my.
+
+    3. Received after the ''approved'' time.
+
+    4. The email is in Mailtrap only — nothing reached RHB (Q-17).'
+  req: REQ-006
+  prio: High
+  ttype: Functional
+  remarks: ''
+  tbc: false
+- tc: CH8-12
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: RHB Support Email
+  scenario: RHB Support email subject
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. Open the RHB Support email.
+
+    2. Read the subject.'
+  expected: '1. Subject = ''Approved eAuto Registration - <Company Name> - <BRN Number>''.
+
+    2. <Company Name> = the run''s company name.
+
+    3. <BRN Number> = the number agreed in Q-05 (SRD example shows the 12-digit new number) — record which one.'
+  req: REQ-009
+  prio: High
+  ttype: Functional
+  remarks: 'Business Trading: what replaces the BRN is TBC (Q-05 / Q-09).'
+  tbc: true
+- tc: CH8-13
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: RHB Support Email
+  scenario: RHB Support email body — values and wording
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. Open the body.
+
+    2. Compare with sheet ''Expected Templates'' → ''Email Template 3 — Body''.
+
+    3. Compare each value line with the Application.'
+  expected: '1. Every paragraph present, in order, same wording (1 working day request, Reply All instruction, signature block).
+
+    2. Company Name / Business Registration Number / UCD Contact Person / Contact Number / Email Address show the Application''s
+    values (which contact: Q-04).
+
+    3. Does NOT contain ''The above company is not eligible for RHB''s online account-opening process…''.'
+  req: REQ-009
+  prio: High
+  ttype: Functional
+  remarks: The robot uses different name / mobile / email for Admin and Director, so this email shows which one the system
+    takes (Q-04).
+  tbc: false
+- tc: CH8-14
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: RHB Support Email
+  scenario: Appointment Letter attached to the RHB Support email
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. Open the Attachments tab.
+
+    2. Download and open the attachment.'
+  expected: '1. Exactly one attachment: the Appointment Letter for THIS Application.
+
+    2. It opens without error.'
+  req: REQ-008
+  prio: High
+  ttype: Functional
+  remarks: ''
+  tbc: false
+- tc: CH8-15
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Appointment Letter
+  scenario: Appointment Letter layout and fixed text
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. Open the letter from the guideline email.
+
+    2. Compare with sheet ''Expected Templates'' → ''Appointment Letter'' and with Sample_Appointment_Letter_v2.0.
+
+    3. Check header, body, signature and footer on every page.'
+  expected: '1. Title ''LETTER OF CONFIRMATION OF REGISTRATION AS A USED CAR DEALER (UCD) UNDER eAUTO SDN. BHD. PLATFORM''
+    (spacing: Q-10).
+
+    2. Letterhead: eAuto logo, ''eAuto Sdn Bhd 200401038456 (676967-T)'', address, ''Tel: 03-2779 8893''.
+
+    3. Clauses 1–8 numbered, wording as the template; Clause 6 refers to ''Clause 5''.
+
+    4. Registration details table (UCD Name / Company Registration No. / UCD / Dealer Reference No.).
+
+    5. Signature image, ''CHIA KET MING'', ''COO''; footer ''Website: www.eauto.my | Customer Service: 03-2779 8899 | Email:
+    support@eauto.my''.
+
+    6. No layout break (cut text, overlap, blank page).'
+  req: REQ-007
+  prio: Medium
+  ttype: Functional
+  remarks: ''
+  tbc: false
+- tc: CH8-16
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Appointment Letter
+  scenario: Appointment Letter pre-filled values
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md. SSM details from CH8-03.
+  steps: '1. Open the letter.
+
+    2. Compare each value with its source (run log, Application, Pre-Application SSM details).'
+  expected: '1. Date = Application approval date, DD/MM/YYYY.
+
+    2. Our Ref = eAuto/OPS/UCD/<Application No>/<approval year> (square brackets: Q-07).
+
+    3. UCD Company Name = the Application''s company name (recipient block, Clause 1, Clause 4).
+
+    4. Company Registration No. = TBC — no SSM details for Business Trading (Q-09) — identical in recipient block, Clause
+    1 and Clause 4.
+
+    5. Company Address = the Application''s company address (which field: Q-06).
+
+    6. UCD / Dealer Reference No. = ''<Pre-Application No> / <Application No>''.'
+  req: REQ-007
+  prio: High
+  ttype: Functional
+  remarks: 'RED: registration number for Business Trading is TBC (Q-09).'
+  tbc: true
+- tc: CH8-17
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Appointment Letter
+  scenario: Same Appointment Letter on both emails
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. Download the attachment of the guideline email and of the RHB Support email.
+
+    2. Compare them.'
+  expected: '1. Same file name and size.
+
+    2. Same Our Ref, date, company, registration number and reference numbers.'
+  req: REQ-008
+  prio: Medium
+  ttype: Functional
+  remarks: ''
+  tbc: false
+- tc: CH8-18
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Negative & Regression
+  scenario: No unresolved placeholders anywhere
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
+  steps: '1. In both emails, search the subject and body for ''['' and '']''.
+
+    2. In the letter, search for ''['' and '']''.'
+  expected: '1. None of these appear literally: [Application No], [Company Name], [BRN Number], [Name], [Contact Number],
+    [UCD Email Address], [RHB Online Registration Link], [Application Link], [DD/MM/YYYY], [YYYY], [UCD Company Name], [Old
+    BRN], [New BRN], [Company Address], [Pre-Application No].
+
+    2. No empty value (e.g. ''Company Name: '' with nothing after it).'
+  req: REQ-005, REQ-007, REQ-009
+  prio: High
+  ttype: Negative
+  remarks: Brackets kept around a filled value in the letter are Q-07, not a failure here.
+  tbc: false
+- tc: CH8-19
+  run: CH8
+  btype: Business Trading (Sarawak)
+  area: Negative & Regression
+  scenario: Exactly one of each email per approval (no duplicates)
+  pre: CH8-02 passed (Application Approved). Values from the run log (black window) block READY FOR MANUAL EMAIL CHECK and
+    the expected-email file 04-runs/12341_CH8_<run>.md.
   steps: '1. Wait 10 minutes after the ''approved'' time (Q-16).
 
     2. In Mailtrap, count the emails for this Application by subject.'
@@ -3281,7 +3281,7 @@ open_questions:
 - id: Q-09
   question: 'Business Trading (no SSM details): what should the letter show for [Old BRN] ([New BRN]) — the trading licence
     number? blank?'
-  blocks: CH5/CH7-16
+  blocks: CH7/CH8-16
 - id: Q-10
   question: 'Letter title: SRD v1.3 ''UNDER eAUTO SDN. BHD. PLATFORM'' vs template .docx ''UNDER eAUTO SDN. BHD.PLATFORM''
     (no space). Which is correct?'
@@ -3304,10 +3304,10 @@ open_questions:
   blocks: CH1-21
 - id: Q-15
   question: (carried Q9) Which BackOffice role and control performs Revert to UCD?
-  blocks: CH6-05/06
+  blocks: CH5-05/06
 - id: Q-16
   question: (carried Q10) Quiet window for 'no email' checks — proposed 10 minutes after the action. OK?
-  blocks: xx-19, xx-04, CH6-05/06
+  blocks: xx-19, xx-04, CH5-05/06
 - id: Q-17
   question: Confirm staging mail is captured by Mailtrap (sandbox) so no live email reaches BIS.Support@rhbgroup.com during
     testing.
@@ -3321,13 +3321,13 @@ open_questions:
   blocks: —
 - id: Q-20
   question: 'Test data: please share a fresh company-details-checker sheet (PASS rows) — needed: 3 ROB (TIN D), 2 ROC (TIN
-    C), 1 LLP (TIN PT). For Business Trading (CH5 Sabah, CH7 Sarawak): which TINs may be used (Application step 1 makes TIN
+    C), 1 LLP (TIN PT). For Business Trading (CH7 Sabah, CH8 Sarawak): which TINs may be used (Application step 1 makes TIN
     mandatory)?'
   blocks: CH1–CH8
 - id: Q-21
   question: 'Run identity: which name / email prefix should the automation use for the Admin In Charge and Director (previously
     ''AZFAR QA'' / azfar.qa.*@modefair.com)? Now configurable via QA_TESTER / QA_EMAIL_PREFIX.'
-  blocks: CH1–CH6
+  blocks: CH1–CH8
 - id: Q-22
   question: '''Clean existing data'': which records? The 3 failed v1.1 chains (P260924/00874 etc.) in staging and their eSim
     rows? The ledger keeps those companies as spent by rule (one company, one use).'

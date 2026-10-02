@@ -159,7 +159,7 @@ export function renderExpected(f: RunFacts): string {
     ``,
     `Search Mailtrap for **${f.admin.email}** and **${f.director.email}**.`,
     ``,
-    `## No-email windows (xx-04; CH6-05 / CH6-06)`,
+    `## No-email windows (xx-04; CH5-05 / CH5-06)`,
     `- Between "Pre-Application approved" and "Application approved": NO guideline email and NO Appointment Letter email.`,
     f.stoppedAt.includes("Submitted")
       ? `- After "Application submitted" (and after the manual Revert to UCD): NO guideline email and NO Appointment Letter email.`

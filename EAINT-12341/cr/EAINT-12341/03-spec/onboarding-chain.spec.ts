@@ -26,7 +26,7 @@
 //   3. approve the Pre-Application in BackOffice
 //   4. open the Application, fill it (directors from SSM or typed)
 //   5. upload, acknowledge, submit
-//   6. assignee submits for approval, approver approves   (CH6 stops before)
+//   6. assignee submits for approval, approver approves   (CH5 stops before)
 //   7. write 04-runs/<chain>_<run>.md — the expected emails and letter
 import { test } from "@fixtures";
 import * as fs from "node:fs";
@@ -125,6 +125,19 @@ async function companyFor(s: ChainScenario, runId: string): Promise<Company> {
       `${s.id}: no company assigned. Fill its row in tab "1 Companies" of ${COMPANY_SHEET} ` +
         "(PASS row from the company-details-checker sheet). Nothing has been written.",
     );
+  }
+  // A company in the wrong row (e.g. a sole proprietor typed in a Sdn Bhd row)
+  // would spend it on the wrong test. The TIN prefix gives the type away.
+  const prefix: Record<string, RegExp> = { ROC: /^C/, ROB: /^(D|IG)/, LLP: /^PT/ };
+  if (!prefix[s.type].test(company.tin)) {
+    throw new Error(
+      `${s.id} is a ${s.businessType} run, but TIN ${company.tin} does not start with ` +
+        `${{ ROC: "C", ROB: "D or IG", LLP: "PT" }[s.type as "ROC" | "ROB" | "LLP"]} — is the company in the right row? ` +
+        "Nothing has been written.",
+    );
+  }
+  if (s.type === "LLP" && !/^LLP/i.test(company.roc)) {
+    throw new Error(`${s.id} is an LLP run, but ${company.roc} is not an LLP number. Nothing has been written.`);
   }
   return company;
 }

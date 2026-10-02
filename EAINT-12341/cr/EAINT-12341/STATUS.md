@@ -33,23 +33,24 @@ now feeds most checks. Full mapping: workbook sheets *Change Analysis* and
 - [ ] `04-runs/`: none yet — each run writes `<chain>_<run>.md` (expected emails/letter with the run's values)
 - [ ] `05-evidence/`: Mailtrap screenshots per TS
 
-## Chains (v1.3)
+## Runs (v1.3) — in execution priority order (QA, 02.10.2026)
 
-| Chain | Type | People | Stops at | Feeds | Company | Status |
+Sdn Bhd / Bhd → Sole Proprietorship / Partnership → LLP → Business Trading (Sabah) → Business Trading (Sarawak).
+
+| Run | Business type | People | Stops at | Test cases | Company | Status |
 |---|---|---|---|---|---|---|
-| 12341_CH1 | ROB | 4 MY | Approved | CH1-01…21 | **not assigned (Q-20)** | — |
-| 12341_CH2 | ROB | 5 MY | Approved | CH2-01…19 | **not assigned** | — |
-| 12341_CH3 | ROC | 3, 1 foreign | Approved | CH3-01…19 | **not assigned** | — |
-| 12341_CH4 | LLP | 4 PT | Approved | CH4-01…19 | **not assigned** (LLP0035174-LGN unspent, recheck) | — |
-| 12341_CH5 | Business Trading (Sabah) | 2 typed | Approved | CH5/CH7-01…19 | licence generated; **TIN needed (Q-20)**; fixture `trading-licence.pdf` needed | — |
-| 12341_CH6 | ROB | 4 MY | **Submitted** | CH6-01…06 | **not assigned** | — |
-| 12341_CH7 | Business Trading (Sarawak) | 2 typed | Approved | CH5/CH7-01…19 | licence generated; **TIN needed** | — |
-| 12341_CH8 | ROC | 4 MY | Approved | CH8-01…19 | **not assigned** (added 02.10 at QA's request) | — |
+| 12341_CH1 | Sdn Bhd / Bhd (**main**) | 4 MY | Approved | CH1-01…21 | tab "1 Companies" (TIN C) | — |
+| 12341_CH2 | Sdn Bhd / Bhd | 3, 1 foreign | Approved | CH2-01…19 | tab "1 Companies" (TIN C) | — |
+| 12341_CH3 | Sole Prop / Partnership | 4 MY | Approved | CH3-01…19 | tab "1 Companies" (TIN D) | — |
+| 12341_CH4 | Sole Prop / Partnership | 5 MY | Approved | CH4-01…19 | tab "1 Companies" (TIN D) | — |
+| 12341_CH5 | Sole Prop / Partnership | 4 MY | **Submitted** | CH5-01…06 | tab "1 Companies" (TIN D/IG) | — |
+| 12341_CH6 | LLP | 4 PT | Approved | CH6-01…19 | tab "1 Companies" (TIN PT; LLP0035174-LGN unspent, recheck) | — |
+| 12341_CH7 | Business Trading (Sabah) | 2 typed | Approved | CH7-01…19 | licence generated; TIN in tab 1 | — |
+| 12341_CH8 | Business Trading (Sarawak) | 2 typed | Approved | CH8-01…19 | licence generated; TIN in tab 1 | — |
 
-Companies, TINs and the eSim values: `02-plan/EAINT-12341_eSim_Setup.xlsx` (the tester fills tab "1 Companies"; the robot reads it). eSim is set up by hand; payment and reCAPTCHA by hand.
+Companies, TINs and the eSim values: `02-plan/EAINT-12341_eSim_Setup.xlsx` (the tester fills tab "1 Companies"; the robot reads it and refuses a TIN whose prefix does not fit the run's business type). eSim, reCAPTCHA and payment by hand.
 
-Run order: **CH1 first, alone**. It proves the chain end to end and carries
-most checks; run the others only after CH1's emails have been looked at.
+Run CH1 first, alone; the others only after CH1's emails have been looked at.
 
 ### Companies already spent (v1.1 attempts — do not reuse)
 
@@ -61,11 +62,11 @@ most checks; run the others only after CH1's emails have been looked at.
 
 ## Before the first v1.3 run
 
-- [ ] Q-20: companies (PASS rows) set in `03-spec/chain-scenarios.ts`; CH5 TIN
+- [ ] Q-20: companies (PASS rows) in tab "1 Companies" of the eSim setup sheet; CH7 / CH8 TINs
 - [ ] Q-17: staging mail captured by Mailtrap — nothing may reach BIS.Support@rhbgroup.com
 - [ ] Q-21: `QA_TESTER` / `QA_EMAIL_PREFIX` agreed (defaults: QA AUTOMATION / qa.eaint12341)
 - [ ] `automation/env/.staging.env-local` has BO approver + `BO_ADMIN_*` assignee, eSim, Fiuu, URLs
-- [ ] `automation/fixtures/uploads/trading-licence.pdf` exists (CH5 only)
+- [ ] `automation/fixtures/uploads/trading-licence.pdf` exists (CH7, CH8 — provided)
 - [ ] Q-22: decide what "clean existing data" covers (nothing deleted so far)
 
 ## Open questions

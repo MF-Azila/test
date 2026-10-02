@@ -30,9 +30,9 @@ MID = Alignment(wrap_text=True, vertical="center", horizontal="center")
 fill = lambda hex_: PatternFill("solid", fgColor=hex_)
 
 # ── colours ──────────────────────────────────────────────────────────────
-BUSINESS = {  # band colour, light tint for the run row
-    "Sole Proprietorship / Partnership": ("1F4E78", "DDEBF7"),
+BUSINESS = {  # band colour, light tint for the run row — in execution priority order
     "Sdn Bhd / Bhd": ("375623", "E2EFDA"),
+    "Sole Proprietorship / Partnership": ("1F4E78", "DDEBF7"),
     "LLP": ("7030A0", "EADCF4"),
     "Business Trading (Sabah)": ("C65911", "FCE4D6"),
     "Business Trading (Sarawak)": ("833C0B", "F8CBAD"),
@@ -62,28 +62,28 @@ def tc_ref(text):
 
 
 # ── runs, in business-type order ─────────────────────────────────────────
-RUNS = [
-    dict(id="CH1", btype="Sole Proprietorship / Partnership", kind="ROB", people="4 business owners, all Malaysian",
-         tin="D", brn="<ROB no. with letter> (<12-digit no.>), e.g. 003123456-X (202103123456)",
+RUNS = [  # execution priority: Sdn Bhd > Sole Prop / Partnership > LLP > BT Sabah > BT Sarawak
+    dict(id="CH1", btype="Sdn Bhd / Bhd", kind="ROC", people="4 directors, all Malaysian",
+         tin="C", brn="<ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307)",
          note="Main run — do it first. Carries the extra checks CH1-20 (old email) and CH1-21 (hardcopy regression).", main=True),
-    dict(id="CH2", btype="Sole Proprietorship / Partnership", kind="ROB", people="5 business owners, all Malaysian",
-         tin="D", brn="<ROB no. with letter> (<12-digit no.>)",
-         note="REQ-005 Example 2 (5 or more owners) — must get the SAME email as CH1."),
-    dict(id="CH6", btype="Sole Proprietorship / Partnership", kind="ROB", people="4 business owners, all Malaysian",
-         tin="D (or IG)", brn="", note="Stops at Submitted — no-email checks, then a manual Revert to UCD.", negative=True),
-    dict(id="CH3", btype="Sdn Bhd / Bhd", kind="ROC", people="3 directors: 2 Malaysian + 1 foreigner",
+    dict(id="CH2", btype="Sdn Bhd / Bhd", kind="ROC", people="3 directors: 2 Malaysian + 1 foreigner",
          tin="C", brn="<ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307)",
          note="REQ-005 Example 2 (foreign director) — must get the SAME email as CH1."),
-    dict(id="CH8", btype="Sdn Bhd / Bhd", kind="ROC", people="4 directors, all Malaysian",
-         tin="C", brn="<ROC no. with letter> (<12-digit no.>), e.g. 1511229-A (202301017307)",
-         note="Normal Sdn Bhd case (REQ-005 Example 1)."),
-    dict(id="CH4", btype="LLP", kind="LLP", people="4 partners, all Malaysian",
+    dict(id="CH3", btype="Sole Proprietorship / Partnership", kind="ROB", people="4 business owners, all Malaysian",
+         tin="D", brn="<ROB no. with letter> (<12-digit no.>), e.g. 003123456-X (202103123456)",
+         note="Sole Proprietorship / Partnership normal case (REQ-005 Example 1)."),
+    dict(id="CH4", btype="Sole Proprietorship / Partnership", kind="ROB", people="5 business owners, all Malaysian",
+         tin="D", brn="<ROB no. with letter> (<12-digit no.>), e.g. 003123456-X (202103123456)",
+         note="REQ-005 Example 2 (5 or more owners) — must get the SAME email as CH1."),
+    dict(id="CH5", btype="Sole Proprietorship / Partnership", kind="ROB", people="4 business owners, all Malaysian",
+         tin="D (or IG)", brn="", note="Stops at Submitted — no-email checks, then a manual Revert to UCD.", negative=True),
+    dict(id="CH6", btype="LLP", kind="LLP", people="4 partners, all Malaysian",
          tin="PT", brn="<LLP no. incl. -LGN> (<12-digit no.>), e.g. LLP0035174-LGN (202304001238)",
          note="LLP is not in the eSimulator guide — confirm the eSim screen first."),
-    dict(id="CH5", btype="Business Trading (Sabah)", kind="TRADING", people="2 directors (typed by the robot)",
+    dict(id="CH7", btype="Business Trading (Sabah)", kind="TRADING", people="2 directors (typed by the robot)",
          tin="any valid (Q-20)", brn="TBC — no SSM details for Business Trading (Q-09)",
          note="Non-SSM. No eSim. Letter registration number expected result is TBC (red)."),
-    dict(id="CH7", btype="Business Trading (Sarawak)", kind="TRADING", people="2 directors (typed by the robot)",
+    dict(id="CH8", btype="Business Trading (Sarawak)", kind="TRADING", people="2 directors (typed by the robot)",
          tin="any valid (Q-20)", brn="TBC — no SSM details for Business Trading (Q-09)",
          note="Non-SSM, Sarawak. No eSim. Letter registration number expected result is TBC (red)."),
 ]

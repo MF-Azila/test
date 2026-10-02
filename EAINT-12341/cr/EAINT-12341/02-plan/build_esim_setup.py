@@ -23,19 +23,19 @@ CALC = PatternFill("solid", fgColor="E2EFDA")
 TOP = Alignment(wrap_text=True, vertical="top")
 BACKUP_LINK = "https://cdn.eauto.my/FAQs_on_JPJeID_and_MyJPJ_App.pdf"
 
-# Same order as the tester's table (02.10.2026).
-RUNS = [
-    dict(no=1, chain="CH1", type="ROB", label="Sole Prop / Partnership", tin="D", people=4, foreign=0, remark="Main test, run first"),
-    dict(no=2, chain="CH2", type="ROB", label="Sole Prop / Partnership", tin="D", people=5, foreign=0, remark=""),
-    dict(no=3, chain="CH6", type="ROB", label="Sole Prop / Partnership", tin="D (or IG)", people=4, foreign=0, remark="Stops at Submitted"),
-    dict(no=4, chain="CH3", type="ROC", label="Sdn Bhd / Bhd", tin="C", people=3, foreign=1, remark="Has 1 foreign director"),
-    dict(no=5, chain="CH8", type="ROC", label="Sdn Bhd / Bhd", tin="C", people=4, foreign=0, remark="Normal Sdn Bhd case"),
-    dict(no=6, chain="CH4", type="LLP", label="LLP", tin="PT", people=4, foreign=0, remark="Check LLP0035174-LGN first"),
-    dict(no=7, chain="CH5", type="TRADING", label="Business Trading (Sabah)", tin="TIN only", people=0, foreign=0, remark="No eSim. Fill ONLY the TIN cell."),
-    dict(no=8, chain="CH7", type="TRADING", label="Business Trading (Sarawak)", tin="TIN only", people=0, foreign=0, remark="No eSim. Fill ONLY the TIN cell."),
-    dict(no=9, chain="Spare 1", type="ROB", label="Sole Prop / Partnership", tin="D", people=0, foreign=0, remark="Only if a run fails"),
+# Order = execution priority agreed with the QA (02.10.2026).
+RUNS = [  # execution priority: Sdn Bhd > Sole Prop / Partnership > LLP > BT Sabah > BT Sarawak
+    dict(no=1, chain="CH1", type="ROC", label="Sdn Bhd / Bhd", tin="C", people=4, foreign=0, remark="MAIN TEST — run first"),
+    dict(no=2, chain="CH2", type="ROC", label="Sdn Bhd / Bhd", tin="C", people=3, foreign=1, remark="Has 1 foreign director"),
+    dict(no=3, chain="CH3", type="ROB", label="Sole Prop / Partnership", tin="D", people=4, foreign=0, remark=""),
+    dict(no=4, chain="CH4", type="ROB", label="Sole Prop / Partnership", tin="D", people=5, foreign=0, remark=""),
+    dict(no=5, chain="CH5", type="ROB", label="Sole Prop / Partnership", tin="D (or IG)", people=4, foreign=0, remark="Stops at Submitted"),
+    dict(no=6, chain="CH6", type="LLP", label="LLP", tin="PT", people=4, foreign=0, remark="Check LLP0035174-LGN first"),
+    dict(no=7, chain="CH7", type="TRADING", label="Business Trading (Sabah)", tin="TIN only", people=0, foreign=0, remark="No eSim. Fill ONLY the TIN cell."),
+    dict(no=8, chain="CH8", type="TRADING", label="Business Trading (Sarawak)", tin="TIN only", people=0, foreign=0, remark="No eSim. Fill ONLY the TIN cell."),
+    dict(no=9, chain="Spare 1", type="ROC", label="Sdn Bhd / Bhd", tin="C", people=0, foreign=0, remark="Only if a run fails"),
     dict(no=10, chain="Spare 2", type="ROB", label="Sole Prop / Partnership", tin="D", people=0, foreign=0, remark="Only if a run fails"),
-    dict(no=11, chain="Spare 3", type="ROC", label="Sdn Bhd / Bhd", tin="C", people=0, foreign=0, remark="Only if a run fails"),
+    dict(no=11, chain="Spare 3", type="ROB", label="Sole Prop / Partnership", tin="D", people=0, foreign=0, remark="Only if a run fails"),
     dict(no=12, chain="Spare 4", type="LLP", label="LLP", tin="PT", people=0, foreign=0, remark="If available"),
 ]
 SUFFIX = {"ROB": "ENTERPRISE", "ROC": "SDN BHD", "LLP": "PLT"}
@@ -86,7 +86,7 @@ lines = [
     ("Send this file back to QA support after filling tab 1, so the same numbers go into the robot.", True),
     ("", False),
     ("Not confirmed yet (will be updated): the foreign director ID format (A1234567x used), and the LLP screen (not in the eSimulator guide).", False),
-    ("Business Trading (CH5 Sabah, CH7 Sarawak) has no eSim setup — fill only its TIN in tab 1.", False),
+    ("Business Trading (CH7 Sabah, CH8 Sarawak) has no eSim setup — fill only its TIN in tab 1.", False),
 ]
 for i, (t, b) in enumerate(lines, start=1):
     c(ws, f"A{i}", t, bold=b, border=False, size=12 if i == 1 else 10)

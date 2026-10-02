@@ -43,7 +43,7 @@ export interface ChainScenario {
   covers: string[];
   /** People to seed in eSim (SSM types), or to type (Business Trading). */
   seed: { directors: number; foreign?: number; secretaries?: number; shareholders?: number };
-  /** Where the chain stops. CH6 must stop at Submitted (no-email checks, then a manual revert). */
+  /** Where the chain stops. CH5 must stop at Submitted (no-email checks, then a manual revert). */
   stopAt: "approved" | "submitted";
   /** Unset until a PASS row is assigned (Q-20). */
   company?: Company;
@@ -92,63 +92,69 @@ export function chainPeople(s: ChainScenario): Person[] {
   });
 }
 
+// Order = execution priority agreed with the QA (02.10.2026):
+// Sdn Bhd / Bhd → Sole Proprietorship / Partnership → LLP → Business Trading (Sabah) → (Sarawak).
+// CH1 is the main run: it also carries CH1-20 (old email) and CH1-21 (hardcopy regression).
 export const SCENARIOS: ChainScenario[] = [
+  // ── 1. Sdn Bhd / Bhd ────────────────────────────────────────────────────
   {
-    id: "12341_CH1", businessType: ROB, type: "ROB", sheetCount: "4", sheetNationality: "All Malaysian",
+    id: "12341_CH1", businessType: "Sdn Bhd / Bhd", type: "ROC", sheetCount: "4", sheetNationality: "All Malaysian",
     covers: ["CH1-01 … CH1-21"],
     seed: { directors: 4 }, stopAt: "approved",
-    // company: { roc: "", newRoc: "", tin: "D…", sheetRow: 0 },   // Q-20: PASS row, TIN prefix D
-    note: "Primary chain. After the email checks, the same Application is used for CH1-21 (hardcopy resubmission, manual).",
+    note: "Main run — do it first. After the email checks, the same Application is used for CH1-21 (hardcopy resubmission, manual).",
   },
   {
-    id: "12341_CH2", businessType: ROB, type: "ROB", sheetCount: "5", sheetNationality: "All Malaysian",
+    id: "12341_CH2", businessType: "Sdn Bhd / Bhd", type: "ROC", sheetCount: "3", sheetNationality: "2 Malaysian, 1 Foreigner",
     covers: ["CH2-01 … CH2-19"],
-    seed: { directors: 5 }, stopAt: "approved",
-    // company: Q-20 — PASS row, TIN prefix D
-  },
-  {
-    id: "12341_CH3", businessType: "Sdn Bhd / Bhd", type: "ROC", sheetCount: "3", sheetNationality: "2 Malaysian, 1 Foreigner",
-    covers: ["CH3-01 … CH3-19"],
     seed: { directors: 3, foreign: 1 }, stopAt: "approved",
-    // company: Q-20 — PASS row, TIN prefix C
+    note: "REQ-005 Example 2 (foreign director) — must get the same email as CH1.",
   },
+  // ── 2. Sole Proprietorship / Partnership ────────────────────────────────
   {
-    id: "12341_CH8", businessType: "Sdn Bhd / Bhd", type: "ROC", sheetCount: "4", sheetNationality: "All Malaysian",
-    covers: ["CH8-01 … CH8-19"],
+    id: "12341_CH3", businessType: ROB, type: "ROB", sheetCount: "4", sheetNationality: "All Malaysian",
+    covers: ["CH3-01 … CH3-19"],
     seed: { directors: 4 }, stopAt: "approved",
-    // company: tab "1 Companies" — PASS row, TIN prefix C (added 02.10.2026 at the QA's request)
   },
   {
-    id: "12341_CH4", businessType: "LLP", type: "LLP", sheetCount: "4", sheetNationality: "All Malaysian",
+    id: "12341_CH4", businessType: ROB, type: "ROB", sheetCount: "5", sheetNationality: "All Malaysian",
     covers: ["CH4-01 … CH4-19"],
+    seed: { directors: 5 }, stopAt: "approved",
+    note: "REQ-005 Example 2 (5 or more owners) — must get the same email as CH1.",
+  },
+  {
+    id: "12341_CH5", businessType: ROB, type: "ROB", sheetCount: "4", sheetNationality: "All Malaysian",
+    covers: ["CH5-01 … CH5-06"],
+    seed: { directors: 4 }, stopAt: "submitted",
+    note: "Stops at Submitted. Check Mailtrap (quiet window), then Revert to UCD by hand and check again.",
+  },
+  // ── 3. LLP ──────────────────────────────────────────────────────────────
+  {
+    id: "12341_CH6", businessType: "LLP", type: "LLP", sheetCount: "4", sheetNationality: "All Malaysian",
+    covers: ["CH6-01 … CH6-19"],
     seed: { directors: 4 }, stopAt: "approved",
-    // company: Q-20 — PASS row, TIN prefix PT. LLP0035174-LGN (row 37) was the only usable LLP on the 23.09 sheet
-    // and has NOT been spent — it may be reused here if it is still PASS on the new sheet.
+    // LLP0035174-LGN (row 37 of the 23.09 sheet) was never spent — reuse only if still PASS.
+    note: "LLP is not in the eSimulator guide — confirm the eSim screen first.",
   },
+  // ── 4. Business Trading (Sabah) ─────────────────────────────────────────
   {
-    id: "12341_CH5", businessType: "Business Trading (Sabah)", type: "TRADING", sheetCount: "2 (typed)",
-    sheetNationality: "All Malaysian",
-    covers: ["CH5-01 … CH5-19"],
-    seed: { directors: 2 }, stopAt: "approved",
-    trading: { region: "SABAH", licenceFile: "trading-licence.pdf" /* , tin: Q-20 — or tab "1 Companies" */ },
-    note: "Non-SSM. Letter BRN fields expected TBC (Q-09). First run of the Business Trading path in this chain — watch it.",
-  },
-  {
-    id: "12341_CH7", businessType: "Business Trading (Sarawak)", type: "TRADING", sheetCount: "2 (typed)",
+    id: "12341_CH7", businessType: "Business Trading (Sabah)", type: "TRADING", sheetCount: "2 (typed)",
     sheetNationality: "All Malaysian",
     covers: ["CH7-01 … CH7-19"],
     seed: { directors: 2 }, stopAt: "approved",
-    trading: { region: "SARAWAK", licenceFile: "trading-licence.pdf" /* , tin: Q-20 — or tab "1 Companies" */ },
-    note: "Non-SSM, Sarawak. Run after CH5 has worked.",
+    trading: { region: "SABAH", licenceFile: "trading-licence.pdf" /* , tin: or tab "1 Companies" */ },
+    note: "Non-SSM. Letter BRN fields expected TBC (Q-09). First run of the Business Trading path — watch it.",
   },
+  // ── 5. Business Trading (Sarawak) ───────────────────────────────────────
   {
-    id: "12341_CH6", businessType: ROB, type: "ROB", sheetCount: "4", sheetNationality: "All Malaysian",
-    covers: ["CH6-01 … CH6-06"],
-    seed: { directors: 4 }, stopAt: "submitted",
-    // company: Q-20 — PASS row
-    note: "Stops at Submitted. Check Mailtrap (quiet window), then Revert to UCD by hand and check again.",
+    id: "12341_CH8", businessType: "Business Trading (Sarawak)", type: "TRADING", sheetCount: "2 (typed)",
+    sheetNationality: "All Malaysian",
+    covers: ["CH8-01 … CH8-19"],
+    seed: { directors: 2 }, stopAt: "approved",
+    trading: { region: "SARAWAK", licenceFile: "trading-licence.pdf" /* , tin: or tab "1 Companies" */ },
+    note: "Non-SSM, Sarawak. Run after CH7 has worked.",
   },
 ];
+
 
 /** Every company assigned above is distinct — checked at load, not trusted. */
 {

@@ -29,7 +29,7 @@ Do not change any code. If something looks wrong in the code, tell me and show m
    and ask me to type, myself, BO_PASSWORD, BO_ADMIN_PASSWORD, ESIM_PASSWORD, QA_TESTER (my name) and QA_EMAIL_PREFIX.
    NEVER ask me to paste a password into this chat, never print that file, never commit it to git.
    If Chrome is missing, add the line BROWSER_CHANNEL=msedge to that file.
-5. Run "npm run check" (must show no errors) and "npm run list" (must list 8 runs: CH1, CH2, CH3, CH8, CH4, CH5, CH7, CH6).
+5. Run "npm run check" (must show no errors) and "npm run list" (must list 8 runs, in this order: CH1 to CH8).
 6. Ask me to connect the VPN. Then run "npm run preflight". It only opens pages and signs in — it creates no data.
    Show me the whole PREFLIGHT RESULT block.
 7. Only if a BackOffice login failed in preflight: open https://staging.eauto.my/uat4/public/login/ in the Playwright
@@ -79,7 +79,8 @@ Do NOT run the robot.
 
 ## Prompt 3 — Run the robot for ONE run (change ch1 / CH1 to the run you need)
 
-Before this: Prompt 2 done for the same run (Business Trading CH5 / CH7: only the TIN in tab 1).
+Before this: Prompt 2 done for the same run (Business Trading CH7 / CH8: only the TIN in tab 1).
+Order of runs: CH1 (Sdn Bhd, main) → CH2 → CH3 → CH4 → CH5 → CH6 (LLP) → CH7 (BT Sabah) → CH8 (BT Sarawak).
 
 ```
 Run the EAINT-12341 robot for run CH1 on this laptop and keep me informed.

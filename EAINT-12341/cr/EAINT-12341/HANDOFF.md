@@ -51,11 +51,11 @@ the time windows for the no-email checks, with the run's own values.
 
 ## What changed in the spec for v1.3
 
-- Chains CH1–CH6 replace the 18 v1.1 scenarios (`chain-scenarios.ts`, each lists the TS it feeds).
+- Runs CH1–CH8 replace the 18 v1.1 scenarios (`chain-scenarios.ts`), in execution priority: Sdn Bhd (CH1 main, CH2) → Sole Prop / Partnership (CH3–CH5) → LLP (CH6) → Business Trading Sabah (CH7) → Sarawak (CH8).
 - A chain with no company refuses to run before touching anything (Q-20).
-- Business Trading path (CH5): no eSim seed, generated licence number, licence upload, typed directors, SSM Status not required.
+- Business Trading path (CH7, CH8): no eSim seed, generated licence number, licence upload, typed directors, SSM Status not required.
 - Admin In Charge and Director in Charge get different name / mobile / email so the emails show which one the system uses (Q-04).
-- Timestamps for pre-application approved / submitted / approved (no-email windows xx-04, CH6-05/06; letter date xx-16).
+- Timestamps for pre-application approved / submitted / approved (no-email windows xx-04, CH5-05/06; letter date xx-16).
 - `expected-emails.ts` renders the expected content; a partial sheet is written even when a run fails.
 - Identity is configurable (`QA_TESTER`, `QA_EMAIL_PREFIX`, `QA_EMAIL_DOMAIN`) — no personal names hard-coded.
 - Ledger: empty keys never match (trading chains have no new BRN).

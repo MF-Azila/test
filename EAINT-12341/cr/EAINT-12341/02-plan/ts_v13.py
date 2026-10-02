@@ -116,65 +116,22 @@ LETTER_FIELDS = [
     ("[Pre-Application No]", "Pre-Application No (Pyymmdd/nnnnn)"),
 ]
 
-# ── Test data chains ─────────────────────────────────────────────────────────
-# One chain = one Pre-Application → payment → BO approval → Application →
-# submit → assignee → approver. Under v1.3 the template no longer depends on the
-# company structure, so ONE approved chain carries all content checks; the
-# other chains exist to prove "same template regardless" (REQ-005 Ex.1/Ex.2)
-# across business types.
-CHAINS = [
-    dict(id="12341_CH1", type="ROB", btype="Sole Proprietorship / Partnership", count="4 business owners",
-         nationality="All Malaysian", stop="Application Approved",
-         purpose="Primary chain. REQ-005 Example 1. Carries every content check (Email Template 1, Email Template 3, Appointment Letter, old-email suppression, no duplicates, Pre-Application approval silence). Afterwards reused by the hardcopy regression (TS26).",
-         data="New PASS ROB company (Partnership, TIN prefix D) from a fresh company-details-checker sheet. eSim seed: 4 CURRENT_OWNER, all 12-digit IC."),
-    dict(id="12341_CH2", type="ROB", btype="Sole Proprietorship / Partnership", count="5 business owners",
-         nationality="All Malaysian", stop="Application Approved",
-         purpose="REQ-005 Example 2 (count). Proves the former Branch-only template is no longer sent for 5+ owners.",
-         data="New PASS ROB company (TIN prefix D). eSim seed: 5 CURRENT_OWNER, all 12-digit IC."),
-    dict(id="12341_CH3", type="ROC", btype="Sdn Bhd / Bhd", count="3 directors",
-         nationality="2 Malaysian, 1 Foreigner", stop="Application Approved",
-         purpose="REQ-005 Example 2 (foreign director) + Sdn Bhd business type.",
-         data="New PASS ROC company (TIN prefix C). eSim seed: 3 DIRECTOR, 1 with a non-12-digit (passport) ID."),
-    dict(id="12341_CH8", type="ROC", btype="Sdn Bhd / Bhd", count="4 directors",
-         nationality="All Malaysian", stop="Application Approved",
-         purpose="Sdn Bhd normal case (REQ-005 Example 1), added at the QA's request so Sdn Bhd / Bhd is covered without a foreign director too.",
-         data="New PASS ROC company (TIN prefix C). eSim: 4 DIRECTOR, all 12-digit IC."),
-    dict(id="12341_CH4", type="LLP", btype="LLP", count="4 partners",
-         nationality="All Malaysian", stop="Application Approved",
-         purpose="LLP business type: same template; Appointment Letter renders an LLP registration number.",
-         data="New PASS LLP company (TIN prefix PT). eSim seed: 4 PT. (Only 1 LLP was usable on the 23.09 sheet.)"),
-    dict(id="12341_CH5", type="TRADING", btype="Business Trading (Sabah)", count="2 directors (typed)",
-         nationality="All Malaysian", stop="Application Approved",
-         purpose="Non-SSM business type: 'the same email is sent to every UCD' (SRD §2.2.2). Appointment Letter BRN fields TBC (Q-09).",
-         data="Unique trading licence number (robot generates) + licence file (sample provided). TIN to use: Q-20. No eSim setup."),
-    dict(id="12341_CH7", type="TRADING", btype="Business Trading (Sarawak)", count="2 directors (typed)",
-         nationality="All Malaysian", stop="Application Approved",
-         purpose="Second non-SSM business type (Sarawak) — every business type on the Pre-Application form is covered once.",
-         data="Same as CH5, region Sarawak. TIN to use: Q-20. No eSim setup."),
-    dict(id="12341_CH6", type="ROB", btype="Sole Proprietorship / Partnership", count="4 business owners",
-         nationality="All Malaysian", stop="Application Submitted (then manual Revert to UCD)",
-         purpose="Negative trigger: no new email at Submitted or on Revert to UCD (REQ-001).",
-         data="New PASS ROB company. eSim seed: 4 CURRENT_OWNER."),
-]
-
-PRE_CHAIN = ("Precondition: chain {chain} has been executed by the automation up to {stop} "
-             "(see the 'Test Data & Chains' sheet). The run log's READY FOR MANUAL EMAIL CHECK block "
-             "gives the UCD email, Application No, Pre-Application No, company name, BRNs and the "
-             "approval timestamp used below.")
-
-def _pre(chain, stop="Application Approved"):
-    return PRE_CHAIN.format(chain=chain, stop=stop)
+# ── Runs ─────────────────────────────────────────────────────────────────────
+# Defined in build_test_cases.py (workbook) and build_esim_setup.py (eSim sheet),
+# in execution priority: Sdn Bhd > Sole Prop / Partnership > LLP > BT Sabah > BT Sarawak.
+# CH1 Sdn Bhd 4 MY (main) · CH2 Sdn Bhd 3 incl. 1 foreign · CH3 ROB 4 · CH4 ROB 5 ·
+# CH5 ROB 4 stops at Submitted · CH6 LLP 4 · CH7 BT Sabah · CH8 BT Sarawak.
 
 # ── Test cases ───────────────────────────────────────────────────────────────
 # Defined per run in build_test_cases.py (sorted by business type). TS ids of
 # the first v1.3 draft map to the new ids as in TS_TO_TC below.
 TS_TO_TC = {
     "TS01": "xx-05", "TS02": "xx-06", "TS03": "xx-07", "TS04": "xx-08", "TS05": "xx-09",
-    "TS06": "CH1-05–10", "TS07": "CH2-05–10", "TS08": "CH3-05–10", "TS08A": "CH8-05–10", "TS09": "CH4-05–10",
-    "TS10": "CH5/CH7-05–10", "TS11": "xx-11", "TS12": "xx-12", "TS13": "xx-13", "TS14": "xx-14",
-    "TS15": "xx-11–14", "TS16": "xx-15", "TS17": "xx-16", "TS18": "xx-17", "TS19": "CH3/CH8/CH4-16",
-    "TS20": "CH5/CH7-16", "TS21": "xx-18", "TS22": "CH1-20", "TS23": "xx-19", "TS24": "xx-04",
-    "TS25": "CH6-05/06", "TS26": "CH1-21",
+    "TS06": "CH3-05–10", "TS07": "CH4-05–10", "TS08": "CH2-05–10", "TS08A": "CH1-05–10", "TS09": "CH6-05–10",
+    "TS10": "CH7/CH8-05–10", "TS11": "xx-11", "TS12": "xx-12", "TS13": "xx-13", "TS14": "xx-14",
+    "TS15": "xx-11–14", "TS16": "xx-15", "TS17": "xx-16", "TS18": "xx-17", "TS19": "CH1/CH2/CH6-16",
+    "TS20": "CH7/CH8-16", "TS21": "xx-18", "TS22": "CH1-20", "TS23": "xx-19", "TS24": "xx-04",
+    "TS25": "CH5-05/06", "TS26": "CH1-21",
 }
 
 # ── Requirements (v1.3) ──────────────────────────────────────────────────────
@@ -214,7 +171,7 @@ RETIRED = [
     ("12341_E2E9", "LLP 4 PT → Template 1", "Replaced by TS09."),
     ("12341_E2E10", "LLP 5 PT → Template 2", "Retired — REQ-003 removed (also no usable LLP)."),
     ("12341_E2E11", "LLP 3 incl. 1 foreigner → Template 2", "Retired — REQ-003 removed."),
-    ("12341_E2E12", "Business Trading → TBC", "Replaced by TS10 (template now confirmed, Sabah CH5 + Sarawak CH7) + TS20 (letter BRN TBC)."),
+    ("12341_E2E12", "Business Trading → TBC", "Replaced by TS10 (template now confirmed, Sabah CH7 + Sarawak CH8) + TS20 (letter BRN TBC)."),
     ("12341_E2E13", "Template 3 To/CC", "Carried over as TS11."),
     ("12341_E2E14", "Template 3 attachment", "Carried over as TS14 + TS16/TS17 (letter now specified)."),
     ("12341_E2E15", "Template 3 subject/body", "Carried over as TS12, TS13."),
@@ -248,8 +205,8 @@ QUESTIONS = [
     ("Q-17", "Confirm staging mail is captured by Mailtrap (sandbox) so no live email reaches BIS.Support@rhbgroup.com during testing.", "Must be true before CH1 runs.", "All", "Dev / DevOps", "Open"),
     ("Q-18", "Applications approved before deployment: any back-fill / re-send of the new emails? (Assumed none — not in the SRD.)", "Not tested unless confirmed.", "—", "BA", "Open"),
     ("Q-19", "Can an Approved Application be reverted and approved again? If so, should the emails be sent again?", "Would add a scenario.", "—", "BA", "Open"),
-    ("Q-20", "Test data: please share a fresh company-details-checker sheet (PASS rows) — needed: 3 ROB (TIN D), 2 ROC (TIN C), 1 LLP (TIN PT). For Business Trading (CH5 Sabah, CH7 Sarawak): which TINs may be used (Application step 1 makes TIN mandatory)?", "Chains refuse to run without an assigned company.", "CH1–CH8", "QA (Azila)", "Open"),
-    ("Q-21", "Run identity: which name / email prefix should the automation use for the Admin In Charge and Director (previously 'AZFAR QA' / azfar.qa.*@modefair.com)? Now configurable via QA_TESTER / QA_EMAIL_PREFIX.", "Defaults: 'QA AUTOMATION' / qa.eaint12341.", "CH1–CH6", "QA (Azila)", "Open"),
+    ("Q-20", "Test data: please share a fresh company-details-checker sheet (PASS rows) — needed: 3 ROB (TIN D), 2 ROC (TIN C), 1 LLP (TIN PT). For Business Trading (CH7 Sabah, CH8 Sarawak): which TINs may be used (Application step 1 makes TIN mandatory)?", "Chains refuse to run without an assigned company.", "CH1–CH8", "QA (Azila)", "Open"),
+    ("Q-21", "Run identity: which name / email prefix should the automation use for the Admin In Charge and Director (previously 'AZFAR QA' / azfar.qa.*@modefair.com)? Now configurable via QA_TESTER / QA_EMAIL_PREFIX.", "Defaults: 'QA AUTOMATION' / qa.eaint12341.", "CH1–CH8", "QA (Azila)", "Open"),
     ("Q-22", "'Clean existing data': which records? The 3 failed v1.1 chains (P260924/00874 etc.) in staging and their eSim rows? The ledger keeps those companies as spent by rule (one company, one use).", "Nothing has been deleted.", "—", "QA (Azila) / Azfar", "Open"),
     ("Q-23", "Subject line of the OLD approved-application email (to prove it is no longer sent).", "TS22 needs it.", "TS22", "QA / Dev", "Open"),
 ]
