@@ -79,6 +79,8 @@ export interface SeedResult {
   /** Whether each row was created fresh or an existing one updated. */
   enquiry: { id: number | undefined; action: "created" | "updated" };
   submission: { id: number | undefined; action: "created" | "updated" };
+  /** Template tags the donor lacked (see `forceTags`). Empty when all were set. */
+  warnings: string[];
 }
 
 /** Which column carries the people, per type — also the donor test. */
@@ -164,6 +166,42 @@ function rebrand(value: unknown, donor: Row, keys: SeedKeys, companyName: string
   return out;
 }
 
+/**
+ * Set the tags the eSimulator guide (eAuto_eSimulator_Guides.xlsx, SSM_SIM_1 /
+ * SSM_SIM_2) says the submission template must carry, instead of trusting the
+ * cloned donor:
+ *
+ *   ROC page1:        <REF_NO>{roc}-{check}</REF_NO> <NEW_REF_NO>{newRoc}</NEW_REF_NO> <ROC_STATUS>EXISTING</ROC_STATUS>
+ *   ROB businessInfo: <BUSINESS_REF_NO>{roc}-{check}</BUSINESS_REF_NO> <NEW_REF_NO>{newRoc}</NEW_REF_NO> <ROB_STATUS>ACTIVE</ROB_STATUS>
+ *
+ * `rebrand` swaps the donor's ROC but leaves the donor's CHECK LETTER behind
+ * (`123456-A` → `639691-A` for a real `639691-H`), and a donor cloned from a
+ * negative-test row can carry `WINDING UP` / `DISSOLVED` (SSM_SIM_4) into the
+ * company. Both are forced here. A tag the donor does not have is reported,
+ * not invented — the guide says copy a full template from an existing record.
+ */
+function forceTags(xml: unknown, tags: Record<string, string>, where: string, warnings: string[]): unknown {
+  if (typeof xml !== "string" || !xml) {
+    warnings.push(`${where} is empty on the donor — tags ${Object.keys(tags).join(", ")} not set.`);
+    return xml;
+  }
+  let out = xml;
+  for (const [tag, value] of Object.entries(tags)) {
+    const re = new RegExp(`(<${tag}>)[\\s\\S]*?(</${tag}>)`, "g");
+    if (!re.test(out)) {
+      warnings.push(`${where} has no <${tag}> — left as cloned.`);
+      continue;
+    }
+    out = out.replace(re, `$1${value}$2`);
+  }
+  return out;
+}
+
+/** The REF_NO the guide wants: the ROC with its check letter, e.g. `639691-H`. */
+function refNo(keys: SeedKeys): string {
+  return keys.checkDigit ? `${keys.roc}-${keys.checkDigit}` : keys.roc;
+}
+
 /** Existing rows for these keys, if any. */
 function existing(rows: Row[], keys: SeedKeys): Row[] {
   return rows.filter((r) => String(r.roc) === keys.roc || String(r.newRoc) === keys.newRoc);
@@ -239,7 +277,7 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
   }
 
   const companyName = req.companyName ?? `QA AUTOMATION ${keys.roc} ${SUFFIX[type]}`;
-  const remark = req.remark ?? `Azfar - QA automation ${type}`;
+  const remark = req.remark ?? `QA automation ${type}`;
   const owners = shapeForType(type, buildOwners(req));
   const shareholders: OwnerConfig[] = Array.from({ length: req.shareholders ?? 0 }, (_, i) => ({
     name: `QA SHAREHOLDER ${String.fromCharCode(65 + i)}`,
@@ -268,12 +306,18 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
     checkDigit: keys.checkDigit ?? null,
   };
   const keep = (col: string) => rebrand(donor[col], donor, keys, companyName);
+  const warnings: string[] = [];
 
   let submissionRow: Row;
   if (type === "ROC") {
     submissionRow = {
       ...common,
-      page1: keep("page1"),
+      page1: forceTags(
+        keep("page1"),
+        { REF_NO: refNo(keys), NEW_REF_NO: keys.newRoc, ROC_STATUS: "EXISTING" },
+        "page1",
+        warnings,
+      ),
       page2: keep("page2"),
       page3: rocDirectorsXml(owners),
       page4: rocShareholdersXml(shareholders),
@@ -283,7 +327,12 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
   } else if (type === "ROB") {
     submissionRow = {
       ...common,
-      businessInfo: keep("businessInfo"),
+      businessInfo: forceTags(
+        keep("businessInfo"),
+        { BUSINESS_REF_NO: refNo(keys), NEW_REF_NO: keys.newRoc, ROB_STATUS: "ACTIVE" },
+        "businessInfo",
+        warnings,
+      ),
       currentOwnerInfo: robOwnersXml(owners, "CURRENT_OWNER"),
       previousOwnerInfo: shareholders.length ? robOwnersXml(shareholders, "PREVIOUS_OWNER") : "",
     };
@@ -321,6 +370,7 @@ export async function seedCompany(sim: EsimClient, req: SeedRequest): Promise<Se
     expectedCount: countedOwners(type, owners).length,
     enquiry: enq,
     submission: sub,
+    warnings,
   };
 }
 

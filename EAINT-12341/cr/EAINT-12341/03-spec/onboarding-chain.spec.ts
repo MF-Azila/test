@@ -174,6 +174,7 @@ for (const s of SCENARIOS) {
             `(enquiry ${seeded.enquiry.action}, submission ${seeded.submission.action}) · ` +
             `people counted ${seeded.expectedCount}`,
         );
+        for (const w of seeded.warnings) log(`  eSim template warning: ${w}`);
       } else {
         log(`${NL}=== ${s.id} · Business Trading — no eSim seed, licence ${company.roc}`);
       }
