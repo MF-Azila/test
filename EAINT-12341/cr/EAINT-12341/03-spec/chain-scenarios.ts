@@ -7,7 +7,7 @@
  * depends on the company structure, and ONE approved chain feeds many test
  * scenarios. The chains below exist to prove "same template regardless"
  * (REQ-005 Example 1 / Example 2) across business types — see the workbook
- * `02-plan/EAINT-12341_Test_Case_v1.3.xlsx`, sheet "Test Data & Chains".
+ * `02-plan/EAINT-12341_Test_Cases_v1.3.xlsx`, sheet "Test Data & Runs".
  *
  * ONE COMPANY, ONE USE. `company-ledger.json` beside this folder records every
  * company the moment it is claimed, and the chain refuses one already in it.
@@ -39,7 +39,7 @@ export interface ChainScenario {
   type: ChainType;
   sheetCount: string;
   sheetNationality: string;
-  /** The workbook test scenarios this chain's approval feeds. */
+  /** The workbook test cases (sheet "Test Cases", sorted by business type) this run feeds. */
   covers: string[];
   /** People to seed in eSim (SSM types), or to type (Business Trading). */
   seed: { directors: number; foreign?: number; secretaries?: number; shareholders?: number };
@@ -95,33 +95,32 @@ export function chainPeople(s: ChainScenario): Person[] {
 export const SCENARIOS: ChainScenario[] = [
   {
     id: "12341_CH1", businessType: ROB, type: "ROB", sheetCount: "4", sheetNationality: "All Malaysian",
-    covers: ["TS01", "TS02", "TS03", "TS04", "TS05", "TS06", "TS11", "TS12", "TS13", "TS14", "TS16", "TS17",
-             "TS18", "TS21", "TS22", "TS23", "TS24", "TS26"],
+    covers: ["CH1-01 … CH1-21"],
     seed: { directors: 4 }, stopAt: "approved",
     // company: { roc: "", newRoc: "", tin: "D…", sheetRow: 0 },   // Q-20: PASS row, TIN prefix D
-    note: "Primary chain. After the email checks, the same Application is used for TS26 (hardcopy resubmission, manual).",
+    note: "Primary chain. After the email checks, the same Application is used for CH1-21 (hardcopy resubmission, manual).",
   },
   {
     id: "12341_CH2", businessType: ROB, type: "ROB", sheetCount: "5", sheetNationality: "All Malaysian",
-    covers: ["TS07", "TS15", "TS21"],
+    covers: ["CH2-01 … CH2-19"],
     seed: { directors: 5 }, stopAt: "approved",
     // company: Q-20 — PASS row, TIN prefix D
   },
   {
     id: "12341_CH3", businessType: "Sdn Bhd / Bhd", type: "ROC", sheetCount: "3", sheetNationality: "2 Malaysian, 1 Foreigner",
-    covers: ["TS08", "TS15", "TS19", "TS21"],
+    covers: ["CH3-01 … CH3-19"],
     seed: { directors: 3, foreign: 1 }, stopAt: "approved",
     // company: Q-20 — PASS row, TIN prefix C
   },
   {
     id: "12341_CH8", businessType: "Sdn Bhd / Bhd", type: "ROC", sheetCount: "4", sheetNationality: "All Malaysian",
-    covers: ["TS08A", "TS15", "TS19", "TS21"],
+    covers: ["CH8-01 … CH8-19"],
     seed: { directors: 4 }, stopAt: "approved",
     // company: tab "1 Companies" — PASS row, TIN prefix C (added 02.10.2026 at the QA's request)
   },
   {
     id: "12341_CH4", businessType: "LLP", type: "LLP", sheetCount: "4", sheetNationality: "All Malaysian",
-    covers: ["TS09", "TS15", "TS19", "TS21"],
+    covers: ["CH4-01 … CH4-19"],
     seed: { directors: 4 }, stopAt: "approved",
     // company: Q-20 — PASS row, TIN prefix PT. LLP0035174-LGN (row 37) was the only usable LLP on the 23.09 sheet
     // and has NOT been spent — it may be reused here if it is still PASS on the new sheet.
@@ -129,7 +128,7 @@ export const SCENARIOS: ChainScenario[] = [
   {
     id: "12341_CH5", businessType: "Business Trading (Sabah)", type: "TRADING", sheetCount: "2 (typed)",
     sheetNationality: "All Malaysian",
-    covers: ["TS10", "TS15", "TS20", "TS21"],
+    covers: ["CH5-01 … CH5-19"],
     seed: { directors: 2 }, stopAt: "approved",
     trading: { region: "SABAH", licenceFile: "trading-licence.pdf" /* , tin: Q-20 — or tab "1 Companies" */ },
     note: "Non-SSM. Letter BRN fields expected TBC (Q-09). First run of the Business Trading path in this chain — watch it.",
@@ -137,14 +136,14 @@ export const SCENARIOS: ChainScenario[] = [
   {
     id: "12341_CH7", businessType: "Business Trading (Sarawak)", type: "TRADING", sheetCount: "2 (typed)",
     sheetNationality: "All Malaysian",
-    covers: ["TS10", "TS15", "TS20", "TS21"],
+    covers: ["CH7-01 … CH7-19"],
     seed: { directors: 2 }, stopAt: "approved",
     trading: { region: "SARAWAK", licenceFile: "trading-licence.pdf" /* , tin: Q-20 — or tab "1 Companies" */ },
     note: "Non-SSM, Sarawak. Run after CH5 has worked.",
   },
   {
     id: "12341_CH6", businessType: ROB, type: "ROB", sheetCount: "4", sheetNationality: "All Malaysian",
-    covers: ["TS25"],
+    covers: ["CH6-01 … CH6-06"],
     seed: { directors: 4 }, stopAt: "submitted",
     // company: Q-20 — PASS row
     note: "Stops at Submitted. Check Mailtrap (quiet window), then Revert to UCD by hand and check again.",

@@ -159,11 +159,11 @@ export function renderExpected(f: RunFacts): string {
     ``,
     `Search Mailtrap for **${f.admin.email}** and **${f.director.email}**.`,
     ``,
-    `## No-email windows (TS24, TS25)`,
+    `## No-email windows (xx-04; CH6-05 / CH6-06)`,
     `- Between "Pre-Application approved" and "Application approved": NO guideline email and NO Appointment Letter email.`,
     f.stoppedAt.includes("Submitted")
       ? `- After "Application submitted" (and after the manual Revert to UCD): NO guideline email and NO Appointment Letter email.`
-      : `- After approval: exactly ONE of each email (TS23). The old approved-application email with the 3 RHB documents must NOT arrive (TS22).`,
+      : `- After approval: exactly ONE of each email (xx-19). The old approved-application email with the 3 RHB documents must NOT arrive (CH1-20).`,
     ``,
     `## Email 1 — RHB Account Registration Guideline (Email Template 1, combined)`,
     `- From: not asserted (Q-12)`,
@@ -198,7 +198,7 @@ export function renderExpected(f: RunFacts): string {
     `- Clause 4 table: UCD Name = ${f.companyName} · Company Registration No. = ${regNo} · UCD / Dealer Reference No. = ${f.preApplicationNo ?? "[Pre-Application No]"} / ${app}`,
     `- Clauses 1–8 numbered (Clause 6 refers to "Clause 5"); signature image, CHIA KET MING, COO`,
     `- Footer: Website: www.eauto.my | Customer Service: 03-2779 8899 | Email: support@eauto.my`,
-    `- No unresolved [placeholder] anywhere (TS21)`,
+    `- No unresolved [placeholder] anywhere (xx-18)`,
     ``,
   ].join("\n");
 }

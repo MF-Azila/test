@@ -55,7 +55,7 @@ the time windows for the no-email checks, with the run's own values.
 - A chain with no company refuses to run before touching anything (Q-20).
 - Business Trading path (CH5): no eSim seed, generated licence number, licence upload, typed directors, SSM Status not required.
 - Admin In Charge and Director in Charge get different name / mobile / email so the emails show which one the system uses (Q-04).
-- Timestamps for pre-application approved / submitted / approved (no-email windows TS24, TS25; letter date TS17).
+- Timestamps for pre-application approved / submitted / approved (no-email windows xx-04, CH6-05/06; letter date xx-16).
 - `expected-emails.ts` renders the expected content; a partial sheet is written even when a run fails.
 - Identity is configurable (`QA_TESTER`, `QA_EMAIL_PREFIX`, `QA_EMAIL_DOMAIN`) — no personal names hard-coded.
 - Ledger: empty keys never match (trading chains have no new BRN).
