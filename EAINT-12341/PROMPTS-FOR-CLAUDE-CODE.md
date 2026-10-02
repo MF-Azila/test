@@ -5,6 +5,72 @@ VPN and the Playwright browser). Wait until it finishes before the next one.
 
 ---
 
+## Prompt 0 — Handover: paste this FIRST in a new LOCAL session on the laptop
+
+```
+You are taking over QA automation work for Jira ticket EAINT-12341 from a cloud Claude Code session. You run on MY
+Windows laptop, which has the company VPN — the cloud session could not reach staging or eSim, you can.
+I am a Senior QA but not technical: explain in plain language, step by step, and ask me before anything that creates
+or changes data. Never guess business rules, test data or expected results — ask me.
+
+WHAT THE TICKET IS
+eAuto CR "Replace Approved Application Email with New Emails to UCD and RHB Support", baseline SRD v1.3 (29.09.2026),
+release 08.10.2026. On Application approval in BackOffice, eAuto must send:
+ 1) ONE combined "RHB Account Registration Guideline" email to the UCD (subject "RHB Online / Branch Account Opening -
+    <Application No> - <Company Name>", CC apply@eauto.my, Appointment Letter attached) — same for every business type;
+ 2) an "Approved eAuto Registration - <Company Name> - <BRN>" email to BIS.Support@rhbgroup.com, CC the UCD and
+    apply@eauto.my, Appointment Letter attached.
+Emails are checked BY HAND in Mailtrap. The robot only drives the flow up to approval.
+
+WHERE EVERYTHING IS
+GitHub repo https://github.com/MF-Azila/test, branch claude/tender-darwin-he17du, folder EAINT-12341/:
+- HOW-TO-RUN.md ................ plain steps for the laptop
+- PROMPTS-FOR-CLAUDE-CODE.md ... Prompt 1 (setup + checks), Prompt 2 (eSim setup for one run), Prompt 3 (run robot)
+- automation/ .................. Playwright project (npm scripts: check, list, preflight, ch1 … ch8)
+- automation/env/env-default ... settings template → copy to env/.staging.env-local (I type the passwords myself)
+- cr/EAINT-12341/02-plan/EAINT-12341_Test_Cases_v1.3.xlsx ... 141 test cases sorted by business type
+- cr/EAINT-12341/02-plan/EAINT-12341_eSim_Setup.xlsx ....... tab "1 Companies" = test data the robot reads;
+                                                              tabs CH1… = what to type in eSim
+- cr/EAINT-12341/03-spec/ ...... the robot (onboarding-chain.spec.ts, chain-scenarios.ts)
+- cr/EAINT-12341/company-ledger.json ... companies already used — one company, one use, never reuse
+- cr/EAINT-12341/STATUS.md and HANDOFF.md ... current status and history
+
+RUNS (execution order = my priority)
+CH1 Sdn Bhd/Bhd 4 directors (MAIN, first) · CH2 Sdn Bhd 3 directors incl. 1 foreigner · CH3 Sole Prop/Partnership 4 ·
+CH4 Sole Prop/Partnership 5 · CH5 Sole Prop/Partnership stops at Submitted · CH6 LLP 4 partners + 1 compliance officer ·
+CH7 Business Trading (Sabah) · CH8 Business Trading (Sarawak). CH7/CH8 need no eSim, only a TIN.
+
+HOW A RUN WORKS
+eSim is set up BY HAND (or by you with my "yes" before every Save) from the eSim sheet. Then "npm run chN" (headed
+Chrome): it waits for me to tick reCAPTCHA and to pay, logs in BackOffice as kmcheah (approver) and eautosoyeng
+(assignee), and stops at Application Approved, printing "READY FOR MANUAL EMAIL CHECK" and writing
+cr/EAINT-12341/04-runs/12341_CHn_<run>.md with the expected emails/letter.
+
+STATUS NOW
+- Code type-checks and lists 8 runs; it has NEVER run against staging yet (staging/eSim unreachable from the cloud).
+- Login, eSim and the full flow are unproven — expect fixes on the first run.
+- I am STILL UPDATING my test data. Do NOT fill tab "1 Companies", do NOT touch eSim, do NOT run npm run ch1…ch8
+  until I give you the data and say so.
+- Used companies (never reuse): IP0581553-U, 003270488-X, 1267419-A.
+- Open questions for the BA are in the workbook, sheet "Open Questions" (e.g. which contact is the "UCD email",
+  which BRN in the RHB email subject, letter address, brackets in the letter, foreign director ID Type in eSim).
+
+RULES
+- Never print, paste or commit passwords; never commit env/.staging.env-local.
+- Before any change to eSim or staging, show me exactly what will change and wait for "yes".
+- If a run fails, do NOT re-run it (the company is spent). Classify the failure (application defect / automation /
+  test data / environment) with evidence and tell me.
+- Do not rewrite unrelated code. Explain any code change before making it, then commit to the same branch only when I ask.
+
+FIRST THING TO DO NOW
+1. Get the project: git clone https://github.com/MF-Azila/test.git C:\QA\eaint-12341 then
+   git checkout claude/tender-darwin-he17du (if the folder exists: git pull, keep my local files).
+2. Read EAINT-12341/cr/EAINT-12341/STATUS.md and HANDOFF.md and summarise them back to me in 5 lines.
+3. Then follow Prompt 1 in EAINT-12341/PROMPTS-FOR-CLAUDE-CODE.md (setup + "npm run preflight"), and stop.
+```
+
+---
+
 ## Prompt 1 — Set up the robot and check everything (no data is created)
 
 ```
